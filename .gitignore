@@ -1,0 +1,11 @@
+logs/
+cert/*.crt
+cert/*.key
+cert/*.csr
+cert/*.srl
+cert/*.p12
+node_modules/
+public/bower_components/
+config.json
+*.log
+.DS_Store

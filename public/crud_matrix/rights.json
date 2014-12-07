@@ -1,0 +1,33 @@
+{
+  "name" : "rights",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/usersrights?isRemoved=False&limit=30",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "UserId",
+      "foreign" : "/users",
+      "filter" : "foreign:firstname, lastname"
+    },
+    {
+      "name" : "RightId",
+      "foreign" : "/rights",
+      "filter" : "foreign:name"
+    },
+    {
+      "name" : "PointId",
+      "foreign" : "/points",
+      "filter" : "foreign:name"
+    },
+    {
+      "name" : "PeriodId",
+      "foreign" : "/periods",
+      "filter" : "foreign:name"
+    }
+  ]
+}

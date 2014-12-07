@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" ng-app="buckuttAdminApp">
+<head>
+  <meta charset="utf-8">
+  <title>BuckUTT Admin</title>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="css/app.css">
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/crud_matrix.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/services.js"></script>
+  
+  <!-- Bootstrap CSS -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+  <link href="./css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="">BuckUTT Admin</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="">Dashboard</a></li>
+          <li><a href="">Settings</a></li>
+          <li><a href="">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div ng-controller="MenuCtrl" class="col-sm-3 col-md-2 sidebar">
+        <label class="tree-toggler nav-header">General Administration</label>
+        <ul class="nav nav-sidebar">
+          <li class="{{ page == 'users' && 'active' || ''}}"><a ng-href="/#/general/users">Users</a></li>
+          <li class="{{ page == 'rights' && 'active' || ''}}"><a ng-href="/#/general/rights">Rights</a></li>
+          <li class="{{ page == 'fundations' && 'active' || ''}}"><a ng-href="/#/general/fundations">Fundations</a></li>
+          <li class="{{ page == 'points' && 'active' || ''}}"><a ng-href="/#/general/points">Points</a></li>
+          <li class="{{ (fun.id == funId && page == 'periods') && 'active' || ''}}"><a ng-href="/#/general/periods">Periods (Global)</a></li>
+          <li class="{{ (fun.id == funId && page == 'treasury') && 'active' || ''}}"><a ng-href="/#/general/treasury">Treasury (Global)</a></li>
+        </ul>
+        <div ng-repeat="fun in funList | orderBy:'name'">
+          <label class="tree-toggler nav-header">{{fun.name}} Administration</label>
+          <ul class="nav nav-sidebar">
+            <li class="{{ (fun.id == funId && page == 'articles') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/articles">Articles</a></li>
+            <li class="{{ (fun.id == funId && page == 'promotions') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/promotions">Promotions</a></li>
+            <li class="{{ (fun.id == funId && page == 'periods') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/periods">Periods</a></li>
+            <li class="{{ (fun.id == funId && page == 'treasury') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/treasury">Treasury</a></li>
+          </ul>
+        </div>
+      </div>
+      <div ng-view></div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="./bower_components/jquery/jquery.min.js"></script>
+  <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name" : "promotions",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/articles?embed=prices&type=promotion&isRemoved=False&limit=30",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "name"
+    },
+    {
+      "name" : "prices",
+      "multi_valued" : true,
+      "subFields" : 
+      [
+        {
+          "name" : "price",
+          "filter" : "currency:\u20AC"
+        },
+        {
+          "name" : "period"
+        },
+        {
+          "name" : "group"
+        }
+      ]
+    },
+    {
+      "name" : "steps",
+      "multi_valued" : true,
+      "subFields" : 
+      [
+        {
+          "name" : "step_num"
+        },
+        {
+          "name" : "type",
+          "filter" : "translator:art->article, cat->category"
+        },
+        {
+          "name" : "art_cat_id"
+        }
+      ]
+    }
+  ]
+}

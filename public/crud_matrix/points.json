@@ -1,0 +1,16 @@
+{
+  "name" : "points",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/points?isRemoved=False&limit=30",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "name"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <!-- mv select button, hidden when no selection is needed -->
+    <div ng-if="mv_count > 1" class="btn-group pull-right">
+      <button ng-repeat="col in mv_cols" type="button" ng-click="mvSelect(col.pos)"
+              ng-attr-class="btn btn-default blue {{col.pos == mv_selected && 'active' || ''}}">{{col.name | capitalize}}</button>
+    </div>
+    
+    <!-- Page name -->
+    <span ng-switch="mv_selected">
+      <h2 ng-switch-when="0" class="sub-header">{{matrix.name | capitalize}}</h2>
+      <h2 ng-switch-default class="sub-header">{{fun.name | capitalize}} - {{matrix.name | capitalize}}</h2>
+    </span>
+    
+    <p>
+      <!-- Page num select -->
+      <div class="btn-group" style="float:right" role="group">
+        <button type="button" class="btn btn-default">&laquo;</button>
+        <button type="button" class="btn btn-default">1</button>
+
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            5
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">6</a></li>
+            <li><a href="#">7</a></li>
+            <li><a href="#">8</a></li>
+            <li><a href="#">9</a></li>
+            <li><a href="#">10</a></li>
+            <li><a href="#">11</a></li>
+          </ul>
+        </div>
+        <button type="button" class="btn btn-default">12</button>
+        <button type="button" class="btn btn-default">&raquo;</button>
+      </div>
+      
+      <button type="button" class="btn btn-warning">Search & Sort</button>
+      <span ng-switch="mv_selected">
+        <a ng-switch-when="0" href="/#/general/{{page}}/create" class="btn btn-primary btn-create">Create</a>
+        <a ng-switch-default href="/#/fundation/{{fun.id}}/{{page}}/create" class="btn btn-primary btn-create">Create</a>
+      </span>
+    </p>
+    
+    <div class="table-responsive data-main-content">
+      <table class="table table-striped">
+        <thead>
+          <!-- mono-line when no multi-fields -->
+          <tr ng-if="mv_selected == 0 || matrix.dataStructure[mv_selected].dataLength == 0">
+            <th ng-repeat="col in matrix.dataStructure">{{col.name | capitalize}}</th>
+            <th>Action</th>
+          </tr>
+          
+          <!-- two lines when multi-fields -->
+          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
+            <th ng-repeat="col in matrix.dataStructure" 
+                ng-attr-rowspan="{{$index == mv_selected && 'none' || '2'}}"
+                ng-attr-colspan="{{$index == mv_selected && col.dataLength || 'none'}}">{{col.name | capitalize}}</th>
+            <th ng-attr-rowspan="{{matrix.dataStructure[mv_selected].dataLength > 0 && '2' || 'none'}}">Action</th>
+          </tr>
+          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
+            <th ng-repeat="col in matrix.dataStructure[mv_selected].subFields">{{col.name | capitalize}}</th>
+          </tr>
+        </thead>
+        <!-- each item is a tbody -->
+        <tbody ng-repeat="entry in table">
+          <!-- for multi-valued items, print n lines -->
+          <tr ng-repeat="line in entry[matrix.dataStructure[mv_selected].name]">
+            <!-- first line of the item (with buttons and stuff) -->
+            <td ng-if="$parent.$first" 
+                ng-attr-rowspan="{{($index < mv_selected || $index >= parseInt(mv_selected)+parseInt(matrix.dataStructure[mv_selected].dataLength) && matrix.dataStructure[mv_selected].dataLength != 0) && entry.mv_lengths[mv_selected] || 'none'}}" 
+                ng-repeat="field in matrix.dataStructure[mv_selected].subStructure">
+                  
+                  <!-- mono-valued or multi-valued selected -->
+                  <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
+                    {{entry.hasOwnProperty(field.name) && (angular.isArray(entry[field.name]) && (entry[field.name][0]|tableFilter:field.filter) || entry[field.name]|tableFilter:field.filter) || line[field.name]|tableFilter:field.filter}}
+                  </span>
+                  
+                  <!-- multi-valued not selected -->
+                  <h4 ng-if="field.multi_valued && $index != mv_selected" class="no-margin">
+                    <span ng-repeat="subfield in entry[field.name]" class="badge badge-default table-label">{{subfield | mvLabel:matrix.dataStructure[mv_selected].subStructure[$parent.$index].subFields}}</span>
+                  </h4>
+            </td>
+            <!-- other lines: multi-valued and multi-fields -->
+            <td ng-if="!$parent.$first && matrix.dataStructure[mv_selected].hasOwnProperty('subFields')"
+                ng-repeat="field in matrix.dataStructure[mv_selected].subFields">{{line[field.name]|tableFilter:field.filter}}</td>
+            <!-- other lines: multi-valued but mono-field -->
+            <td ng-if="!$first && !matrix.dataStructure[mv_selected].hasOwnProperty('subFields')">{{line|tableFilter:field.filter}}</td>
+            
+            <td ng-if="$first" rowspan="{{entry.mv_lengths[mv_selected]}}">
+              <a ng-href="/#/fundation/{{fun.id}}/{{page}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
+            </td>
+          </tr>
+          
+          <!-- no multi-valued lines (previous tr loop will loop 0 times), for each item just print 1 line -->
+          <tr ng-if="mv_selected == 0">
+            <td ng-repeat="field in matrix.dataStructure">{{entry[field.name]|tableFilter:field.filter}}</td>
+            
+            <td>
+              <a ng-href="/#/general/{{page}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody><!-- keep this tbody, it is useful -->
+        </tbody>
+      </table>
+    </div>
+  </div>

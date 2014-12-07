@@ -1,0 +1,22 @@
+{
+  "name" : "periods",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/periods?isRemoved=False&limit=30",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "name"
+    },
+    {
+      "name" : "startDate"
+    },
+    {
+      "name" : "endDate"
+    }
+  ]
+}

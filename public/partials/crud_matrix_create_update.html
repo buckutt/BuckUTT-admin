@@ -1,0 +1,82 @@
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    
+    <h2 class="sub-header">Foyer - {{matrix.name | capitalize}} - {{entryId == 0 ? 'Create' : 'Update'}}</h2>
+    
+    <p>
+      <a href="/app/#/fundation/{{funId}}/{{page}}"  class="btn btn-warning">Cancel & go back</a>
+      <button type="button" class="btn btn-primary pull-right">Submit</button>
+    </p>
+    
+    <div class="data-main-content">
+      <form class="well form-horizontal">
+        <legend>Basic values</legend>
+        <!-- mono-valued -->
+        <div ng-repeat="field in matrix.dataStructure" ng-if="!field.multi_valued" ng-attr-class="{{!field.multi_valued && 'row' || ''}}">
+
+          <div ng-if="field.name != 'id' || entryId != 0" class="form-group col-lg-6" >
+                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2">{{field.name | capitalize}} :</label>
+                <div class="col-lg-10">
+                  <input type="text" class="form-control"
+                         ng-disabled="{{field.name == 'id'}}"
+                         ng-attr-id="{{matrix.name}}-{{field.name}}"
+                         ng-attr-value="{{entryId == 0 && '' || entry[field.name]}}">
+                </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-lg-6">
+          <label for="article-tab" class="col-lg-2">Tab :</label>
+            <div class="col-lg-10">
+              <select id="article-tab" class="form-control" >
+                <option>None</option>
+                <option>Barres</option>
+                <option>Cannettes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- multi-valued -->
+        <div ng-repeat="field in matrix.dataStructure" ng-if="field.multi_valued">
+          <legend>{{field.name | capitalize}}</legend>
+          <div class="table-responsive">
+            <table class="table table-striped" ng-if="!angular.isArray(field.subFields)">
+              <thead>
+                <tr>
+                  <th>{{field.name | capitalize}}</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="line in entry[field.name]">
+                  <td>{{line}}</td>
+                  <td>
+                    <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></button>
+                    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-striped" ng-if="angular.isArray(field.subFields)">
+              <thead>
+                <tr>
+                  <th ng-if="angular.isArray(field.subFields)" 
+                      ng-repeat="subField in field.subFields">{{subField.name | capitalize}}</th>
+                  
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="line in entry[field.name]">
+                  <td ng-repeat="subField in field.subFields">{{line[subField.name]}}</td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

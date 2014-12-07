@@ -1,0 +1,16 @@
+{
+  "name" : "fundations",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/fundations",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "name"
+    }
+  ]
+}

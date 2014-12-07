@@ -1,0 +1,40 @@
+{
+  "name" : "articles",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/articles?embed=prices&type=product&isRemoved=False&limit=30",
+  "dataStructure" : 
+  [
+    {
+      "name" : "id"
+    },
+    {
+      "name" : "name"
+    },
+    {
+      "name" : "type"
+    },
+    {
+      "name" : "Prices",
+      "multi_valued" : true,
+      "subFields" : 
+      [
+        {
+          "name" : "credit",
+          "filter" : "currency:\u20AC"
+        },
+        {
+          "name" : "PeriodId",
+          "foreign" : "/periods",
+          "filter" : "foreign:name"
+        },
+        {
+          "name" : "GroupId",
+          "foreign" : "/groups",
+          "filter" : "foreign:name"
+        }
+      ]
+    }
+  ]
+}
