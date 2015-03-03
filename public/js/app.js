@@ -42,6 +42,10 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/crud_matrix_read.html',
         controller: 'CrudMatrixReadCtrl'
       })
+      .when('/login', {
+        templateUrl: 'partials/login.html',
+        controller: 'LoginCtrl'
+      })
       .otherwise({
         redirectTo: '/fundation/3/articles'
       });

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="buckuttAdminApp">
+<html lang="en" ng-app="buckuttAdminApp" ng-controller="AppCtrl">
 <head>
   <meta charset="utf-8">
   <title>BuckUTT Admin</title>
@@ -24,11 +24,11 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="">BuckUTT Admin</a>
       </div>
-      <div class="navbar-collapse collapse">
+      <div ng-if="$root.user" class="navbar-collapse collapse" ng-controller="LoginCtrl">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="">Dashboard</a></li>
+          <li><a href="">Logged in as {{$root.user.login}}</a></li>
           <li><a href="">Settings</a></li>
-          <li><a href="">Help</a></li>
+          <li><a href="" ng-click="logout()">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -36,7 +36,7 @@
 
   <div class="container-fluid">
     <div class="row">
-      <div ng-controller="MenuCtrl" class="col-sm-3 col-md-2 sidebar">
+      <div ng-if="$root.user" ng-controller="MenuCtrl" class="col-sm-3 col-md-2 sidebar">
         <label class="tree-toggler nav-header">General Administration</label>
         <ul class="nav nav-sidebar">
           <li class="{{ page == 'users' && 'active' || ''}}"><a ng-href="/#/general/users">Users</a></li>

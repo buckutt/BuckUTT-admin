@@ -4,6 +4,47 @@
 
 var buckuttControllers = angular.module('buckuttControllers', []);
 
+buckuttControllers.controller('AppCtrl', ['$rootScope', '$scope', '$location', '$http',
+  function($rootScope,$scope,$location,$http) {
+    $http.get('/user').success(function(data) {
+      if (data.error) {
+        $location.path('/login');
+      }
+      else {
+        $rootScope.user = data.user;
+      }
+    });
+  }]
+);
+
+buckuttControllers.controller('LoginCtrl', ['$rootScope', '$scope', '$location', '$http',
+  function($rootScope,$scope,$location,$http) {
+    $scope.login = function(credentials) {
+      $http.post('/login',{'username':credentials.username,'password':credentials.password}).success(function(data) {
+        if (data.error) {
+          alert(data.error.message);
+        }
+        else {
+          $rootScope.user = data.user;
+          $location.path('/');
+        }
+      });
+    };
+    
+    $scope.logout = function() {
+      $http.post('/logout').success(function(data) {
+        if (data.error) {
+          alert(data.error.message);
+        }
+        else {
+          delete $rootScope.user;
+          $location.path('/login');
+        }
+      });
+    };
+  }]
+);
+
 buckuttControllers.controller('MenuCtrl', ['$rootScope', '$scope', '$http',
   function($rootScope,$scope,$http) {
       $rootScope.$watch(function(){

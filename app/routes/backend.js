@@ -3,7 +3,15 @@ var router = express.Router();
 var http = require('http');
 
 router.get('/', function(req, res) {
-  console.log(req.originalUrl)
+  console.log('API '+req.originalUrl)
+  var sess=req.session;
+  var r = {};
+
+  if (!sess.user){
+    r.error = {"type":"AUTH_ERROR","code":2,"message":"No user logged in"};
+    res.send(r);
+    return;
+  }
   
   //verify rights here...
   
@@ -20,9 +28,10 @@ router.get('/', function(req, res) {
     });
   }).on('error', function(e) {
     console.log("Got error: " + e.message);
+    var r = {};
+    r.error = {"type":"API_ERROR","code":1,"message":"Could not connect to api"};
+    res.send(r);
   });
-
-  //res.send('test');
 });
 
 module.exports = router;

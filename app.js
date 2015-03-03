@@ -1,4 +1,7 @@
 var express = require('express');
+var session = require('express-session');
+var form = require("express-form");
+var field = form.field;
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -7,82 +10,98 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
-var clientCertificateAuth = require('client-certificate-auth');
+var rest = require('restler');
+var md5 = require('MD5');
 
-var api_routes = require('./app/routes/api');
+var api_routes = require('./app/routes/backend');
 
 var app = express();
 
-var opts = {
-  key: fs.readFileSync('cert/server.key'),
-  cert: fs.readFileSync('cert/server.crt'),
-  ca: fs.readFileSync('cert/ca.crt'),
-  requestCert: true,
-  rejectUnauthorized: false
-};
-
-var checkAuth = function(cert) {
-  return cert.subject.CN === 'Paul Chabanon';
-};
-
-// view engine setup
-app.set('views', path.join(__dirname, 'app/views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use('/', routes);
+app.use(session({
+  secret: 'ssshhhhh', 
+  resave: false, 
+  saveUninitialized: false
+}));
+
 app.use('/api*', api_routes);
 
-/*
-app.get('/', function(req, res) {
-  res.send('Hello world');
-});
-//*/
-//*
-app.get('/secure', clientCertificateAuth(checkAuth), function(req, res) {
-  res.send('Hello authorized user');
-});
-//*/
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
+app.post('/login', 
+  form(
+    field("username").trim().required().is(/^\w[\w_]{2,8}\d?$/i),
+    field("password").trim().required().is(/^.{2,16}$/)
+  ),
+  function(req, res){
+    var sess=req.session;
+    var r = {};
+    
 
-// error handlers
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
+    if (!req.form.isValid) {
+      r.error = {"type":"AUTH_ERROR","code":1,"message":req.form.errors};
+    }
+    else {
+      rest.get('http://127.0.0.1:8081/api/meanofloginsusers?data='+req.body.username).on('complete', function(re) {
+        if(!re.data){// username not found
+          r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
+          res.send(r);
+          return;
+        }
+        
+        var uid = re.data.UserId;
+        var pwd = md5(req.body.password);
+        rest.get('http://127.0.0.1:8081/api/users?id='+uid+'&password='+pwd).on('complete', function(re) {
+          if(!re.data){// wrong password
+            r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
+            res.send(r);
+            return;
+          }
+          sess.user = {};
+          sess.user.id = re.data.id;
+          sess.user.firstname = re.data.firstname;
+          sess.user.lastname = re.data.lastname;
+          sess.user.nickname = re.data.nickname;
+          sess.user.mail = re.data.mail;
+          sess.user.login = req.body.username;
+          r.user = sess.user;
+          
+          res.send(r);
         });
-    });
-}
-else {
-  // production error handler
-  // no stacktraces leaked to user
-  app.use(function(err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
-          message: err.message,
-          error: {}
       });
+    }
+  }
+);
+
+app.get('/user', function(req, res){
+  var sess=req.session;
+  var r = {};
+  
+  if (sess.user)
+    r.user = sess.user;
+  else
+    r.error = {"type":"AUTH_ERROR","code":2,"message":"No user logged in"};
+  
+  res.send(r);
+});
+
+app.post('/logout', function(req, res){
+  var sess=req.session;
+  var r = {};
+  
+  req.session.destroy(function(err){
+    if(err){
+      console.log(err);
+      r.error = {"type":"AUTH_ERROR","code":666,"message":"Could not destroy session"};
+    }
+    res.send(r);
   });
-}
+});
 
 console.log('env: '+app.get('env'));
 http.createServer(app).listen(80);
-https.createServer(opts,app).listen(3000);
 
