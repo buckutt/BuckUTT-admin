@@ -22,7 +22,7 @@
   <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="">BuckUTT Admin</a>
+        <a class="navbar-brand" href="/#/home">BuckUTT Admin</a>
       </div>
       <div ng-if="$root.user" class="navbar-collapse collapse" ng-controller="LoginCtrl">
         <ul class="nav navbar-nav navbar-right">
@@ -39,20 +39,20 @@
       <div ng-if="$root.user" ng-controller="MenuCtrl" class="col-sm-3 col-md-2 sidebar">
         <label class="tree-toggler nav-header">General Administration</label>
         <ul class="nav nav-sidebar">
-          <li class="{{ page == 'users' && 'active' || ''}}"><a ng-href="/#/general/users">Users</a></li>
-          <li class="{{ page == 'rights' && 'active' || ''}}"><a ng-href="/#/general/rights">Rights</a></li>
-          <li class="{{ page == 'fundations' && 'active' || ''}}"><a ng-href="/#/general/fundations">Fundations</a></li>
-          <li class="{{ page == 'points' && 'active' || ''}}"><a ng-href="/#/general/points">Points</a></li>
-          <li class="{{ (fun.id == funId && page == 'periods') && 'active' || ''}}"><a ng-href="/#/general/periods">Periods (Global)</a></li>
-          <li class="{{ (fun.id == funId && page == 'treasury') && 'active' || ''}}"><a ng-href="/#/general/treasury">Treasury (Global)</a></li>
+          <li class="{{ $root.page == 'users' && 'active' || ''}}"><a ng-href="/#/general/users">Users</a></li>
+          <li class="{{ $root.page == 'rights' && 'active' || ''}}"><a ng-href="/#/general/rights">Rights</a></li>
+          <li class="{{ $root.page == 'fundations' && 'active' || ''}}"><a ng-href="/#/general/fundations">Fundations</a></li>
+          <li class="{{ $root.page == 'points' && 'active' || ''}}"><a ng-href="/#/general/points">Points</a></li>
+          <li class="{{ (fun.id == funId && $root.page == 'periods') && 'active' || ''}}"><a ng-href="/#/general/periods">Periods (Global)</a></li>
+          <li class="{{ (fun.id == funId && $root.page == 'treasury') && 'active' || ''}}"><a ng-href="/#/general/treasury">Treasury (Global)</a></li>
         </ul>
-        <div ng-repeat="fun in funList | orderBy:'name'">
+        <div ng-repeat="fun in $root.funList | orderBy:'name'">
           <label class="tree-toggler nav-header">{{fun.name}} Administration</label>
           <ul class="nav nav-sidebar">
-            <li class="{{ (fun.id == funId && page == 'articles') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/articles">Articles</a></li>
-            <li class="{{ (fun.id == funId && page == 'promotions') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/promotions">Promotions</a></li>
-            <li class="{{ (fun.id == funId && page == 'periods') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/periods">Periods</a></li>
-            <li class="{{ (fun.id == funId && page == 'treasury') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/treasury">Treasury</a></li>
+            <li class="{{ (fun.id == funId && $root.page == 'articles') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/articles">Articles</a></li>
+            <li class="{{ (fun.id == funId && $root.page == 'promotions') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/promotions">Promotions</a></li>
+            <li class="{{ (fun.id == funId && $root.page == 'periods') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/periods">Periods</a></li>
+            <li class="{{ (fun.id == funId && $root.page == 'treasury') && 'active' || ''}}"><a ng-href="/#/fundation/{{fun.id}}/treasury">Treasury</a></li>
           </ul>
         </div>
       </div>

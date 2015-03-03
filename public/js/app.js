@@ -46,7 +46,10 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/login.html',
         controller: 'LoginCtrl'
       })
+      .when('/home', {
+        templateUrl: 'partials/home.html'
+      })
       .otherwise({
-        redirectTo: '/fundation/3/articles'
+        redirectTo: '/home'
       });
   }]);

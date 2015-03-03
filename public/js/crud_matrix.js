@@ -5,8 +5,8 @@
 /*
  * Create a crud_matrix table structure with no data (the "matrix" variable in HTML view)
  */
-var create_crud_matrix = function($scope, $http, callback) {
-  $http.get('crud_matrix/'+$scope.page+'.json').success(function(data) {
+var create_crud_matrix = function($rootScope, $scope, $http, callback) {
+  $http.get('crud_matrix/'+$rootScope.page+'.json').success(function(data) {
     //set dataLength for counting sub fields on multi-valued fields
     //also create a sub-dataStructure in mv_cols with the sub-fields instead of parent field (eg : for article, price/period/group instead of prices)
     var mv_cols = [], mv_count = 0;//mv = multi-valued

@@ -47,40 +47,35 @@ buckuttControllers.controller('LoginCtrl', ['$rootScope', '$scope', '$location',
 
 buckuttControllers.controller('MenuCtrl', ['$rootScope', '$scope', '$http',
   function($rootScope,$scope,$http) {
-      $rootScope.$watch(function(){
-        $scope.page = $rootScope.page;
-        $scope.funId = $rootScope.funId;
-      });
-      
       $http.get('/api/fundations').success(function(data) {
-        $scope.funList = data.data;
-        
-        // create fundList in rootScope
-        var fundList = {};
+        // create funList in rootScope
+        var funList = {};
         for(var f in data.data)
-          fundList[data.data[f].id.toString()] = data.data[f];
-        $rootScope.fundList = fundList;
+          funList[data.data[f].id.toString()] = data.data[f];
+        $rootScope.funList = funList;
       });
   }]
 );
 
 buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$routeParams', '$http',
   function($rootScope,$scope,$routeParams,$http) {
-    $scope.page = $routeParams.page;
-    $scope.fun = $routeParams.funId ? $rootScope.fundList[$routeParams.funId.toString()] : $routeParams.funId;
+    $rootScope.page = $routeParams.page;
+    $rootScope.funId = $routeParams.funId;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
-    $rootScope.page = $scope.page;
-    $rootScope.funId = $scope.fun ? $scope.fun.id : $scope.fun;
 
-    create_crud_matrix($scope, $http, function() {
+    create_crud_matrix($rootScope, $scope, $http, function() {
       var req = '/api'+$scope.matrix.get_url;
-      if($scope.fun)
-        req += '&FundationId='+$scope.fun.id;
-      $http.get(req).success(function(data2) {
+      if($routeParams.funId)
+        req += '&FundationId='+$routeParams.funId;
+      
+      $http.get(req).success(function(res) {
         //set dataLength for counting number of values on multi-valued fields
-        for(var i in data2.data){
-          var entry = data2.data[i];
+        for(var i in res.data){
+          if (!angular.isNumber(i))
+            break;// if one only line returned by api, data is not a numeric array but directly the one object
+          
+          var entry = res.data[i];
           entry.mv_lengths = {};
           for(var j in $scope.mv_cols){
             entry.mv_lengths[$scope.mv_cols[j].pos] = entry[$scope.mv_cols[j].name].length;
@@ -94,17 +89,17 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$r
             //go through subfields
             for(var sf in col.subFields) {
               if(col.subFields[sf].foreign){
-                foreign_field_replace($http, col.name, col.subFields[sf], data2.data);
+                foreign_field_replace($http, col.name, col.subFields[sf], res.data);
               }
             }
           }
           else {//mono valued
             if(col.foreign){
-              foreign_field_replace($http, col.name, col, data2.data);
+              foreign_field_replace($http, col.name, col, res.data);
             }
           }
         }
-        $scope.table = data2.data;
+        $scope.table = res.data;
       });
     });
     
@@ -116,15 +111,13 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$r
 
 buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$scope', '$routeParams', '$http',
   function($rootScope,$scope,$routeParams,$http) {
-    $scope.page = $routeParams.page;
-    $scope.funId = $routeParams.funId;
+    $rootScope.page = $routeParams.page;
+    $rootScope.funId = $routeParams.funId;
     $scope.entryId = $routeParams.entry ? $routeParams.entry : 0;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
-    $rootScope.page = $scope.page;
-    $rootScope.funId = $scope.funId;
     
-    create_crud_matrix($scope, $http, function() {
+    create_crud_matrix($rootScope, $scope, $http, function() {
       $http.get('/api'+$scope.matrix.get_url+'_'+$scope.entryId).success(function(entry) {
         //set dataLength for counting number of values on multi-valued fields
         entry.mv_lengths = {};
@@ -139,12 +132,10 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
 
 buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routeParams', '$http',
   function($rootScope,$scope,$routeParams,$http) {
-    $scope.page = 'treasury';
-    $scope.funId = $routeParams.funId;
+    $rootScope.page = 'treasury';
+    $rootScope.funId = $routeParams.funId;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
-    $rootScope.page = $scope.page;
-    $rootScope.funId = $scope.funId;
   }]
 );
 
