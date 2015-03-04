@@ -41,22 +41,34 @@ app.post('/login',
     var r = {};
     
 
-
+console.log('LOGIN');
     if (!req.form.isValid) {
       r.error = {"type":"AUTH_ERROR","code":1,"message":req.form.errors};
     }
     else {
-      rest.get('http://127.0.0.1:8081/api/meanofloginsusers?data='+req.body.username).on('complete', function(re) {
-        if(!re.data){// username not found
+      var uid = 9180;
+      rest.postJson('http://127.0.0.1:8081/api/services/login', { 'UserId': uid }).on('complete', function(re) {
+        if(!re.token){// user id not found
           r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
           res.send(r);
           return;
         }
         
-        var uid = re.data.UserId;
-        var pwd = md5(req.body.password);
-        rest.get('http://127.0.0.1:8081/api/users?id='+uid+'&password='+pwd).on('complete', function(re) {
-          if(!re.data){// wrong password
+        var utoken = re.token;
+        
+        // check rights using token here ?
+        
+        var options = {
+            headers: {
+                'Accept': '*/*',
+                'User-Agent': 'Restling for node.js',
+                'Authorization': 'Bearer ' + utoken
+            }
+        };
+        
+        rest.get('http://127.0.0.1:8081/api/users?id='+uid, options).on('complete', function(re) {
+          console.log(re);
+          if(!re.data){// no rights to read this info ^^
             r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
             res.send(r);
             return;
@@ -68,6 +80,7 @@ app.post('/login',
           sess.user.nickname = re.data.nickname;
           sess.user.mail = re.data.mail;
           sess.user.login = req.body.username;
+          sess.user.token = utoken;
           r.user = sess.user;
           
           res.send(r);
