@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/articles?embed=prices&type=product&isRemoved=False&limit=30",
+  "get_url" : "/articles?embed=prices&type=product&isRemoved=False",
   "dataStructure" : 
   [
     {

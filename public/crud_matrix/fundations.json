@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/fundations",
+  "get_url" : "/fundations?isRemoved=False",
   "dataStructure" : 
   [
     {

@@ -15,35 +15,28 @@
     <p>
       <!-- Page num select -->
       <div class="btn-group" style="float:right" role="group">
-        <button type="button" class="btn btn-default">&laquo;</button>
-        <button type="button" class="btn btn-default">1</button>
+        <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_prev()">&laquo;</button>
+        <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_goto(1)">1</button>
 
-        <div class="btn-group" role="group">
+        <div ng-if="$root.page.max != 1 && (page_dropDown().length > 3 || $root.page.num != 2)" class="btn-group">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            5
+            {{$root.page.num}}
             <span class="caret"></span>
           </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">6</a></li>
-            <li><a href="#">7</a></li>
-            <li><a href="#">8</a></li>
-            <li><a href="#">9</a></li>
-            <li><a href="#">10</a></li>
-            <li><a href="#">11</a></li>
+          <ul ng-switch="mv_selected" class="dropdown-menu" role="menu">
+            <li ng-switch-when="0" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'divider':($root.page.num == num)}"><a href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a></li>
+            <li ng-switch-default  ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'divider':($root.page.num == num)}"><a href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a></li>
           </ul>
         </div>
-        <button type="button" class="btn btn-default">12</button>
-        <button type="button" class="btn btn-default">&raquo;</button>
+        <button type="button" class="btn btn-default" ng-if="page_dropDown().length <= 3 && $root.page.num == 2">{{$root.page.num}}</button>
+        <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_goto($root.page.max)">{{$root.page.max}}</button>
+        <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_next()">&raquo;</button>
       </div>
       
       <button type="button" class="btn btn-warning">Search & Sort</button>
       <span ng-switch="mv_selected">
-        <a ng-switch-when="0" href="/#/general/{{$root.page}}/create" class="btn btn-primary btn-create">Create</a>
-        <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.page}}/create" class="btn btn-primary btn-create">Create</a>
+        <a ng-switch-when="0" href="/#/general/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
+        <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
       </span>
     </p>
     
@@ -73,12 +66,12 @@
           <tr ng-repeat="line in entry[matrix.dataStructure[mv_selected].name]">
             <!-- first line of the item (with buttons and stuff) -->
             <td ng-if="$parent.$first" 
-                ng-attr-rowspan="{{($index < mv_selected || $index >= parseInt(mv_selected)+parseInt(matrix.dataStructure[mv_selected].dataLength) && matrix.dataStructure[mv_selected].dataLength != 0) && entry.mv_lengths[mv_selected] || 'none'}}" 
+                ng-attr-rowspan="{{($index < mv_selected || $index >= parseInt(mv_selected)+parseInt(matrix.dataStructure[mv_selected].dataLength) && matrix.dataStructure[mv_selected].dataLength != 0) ? entry.mv_lengths[mv_selected] : 'none'}}"
                 ng-repeat="field in matrix.dataStructure[mv_selected].subStructure">
                   
                   <!-- mono-valued or multi-valued selected -->
                   <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
-                    {{entry.hasOwnProperty(field.name) && (angular.isArray(entry[field.name]) && (entry[field.name][0]|tableFilter:field.filter) || entry[field.name]|tableFilter:field.filter) || line[field.name]|tableFilter:field.filter}}
+                    {{entry.hasOwnProperty(field.name) ? (angular.isArray(entry[field.name]) ? (entry[field.name][0]|tableFilter:field.filter) : entry[field.name]|tableFilter:field.filter) : line[field.name]|tableFilter:field.filter}}
                   </span>
                   
                   <!-- multi-valued not selected -->
@@ -92,8 +85,8 @@
             <!-- other lines: multi-valued but mono-field -->
             <td ng-if="!$first && !matrix.dataStructure[mv_selected].hasOwnProperty('subFields')">{{line|tableFilter:field.filter}}</td>
             
-            <td ng-if="$first" rowspan="{{entry.mv_lengths[mv_selected]}}">
-              <a ng-href="/#/fundation/{{funId}}/{{$root.page}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+            <td ng-if="$first" ng-attr-rowspan="{{entry.mv_lengths[mv_selected]}}">
+              <a ng-href="/#/fundation/{{funId}}/{{$root.pageName}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>
@@ -103,7 +96,7 @@
             <td ng-repeat="field in matrix.dataStructure">{{entry[field.name]|tableFilter:field.filter}}</td>
             
             <td>
-              <a ng-href="/#/general/{$root.page}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a ng-href="/#/general/{{$root.pageName}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>

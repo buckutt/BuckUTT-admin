@@ -14,15 +14,15 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/treasury.html',
         controller: 'TreasuryCtrl'
       })
-      .when('/general/:page/create', {
+      .when('/general/:pageName/create', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/general/:page/update/:entry', {
+      .when('/general/:pageName/update/:entry', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/general/:page', {
+      .when('/general/:pageName/:pageNum?', {
         templateUrl: 'partials/crud_matrix_read.html',
         controller: 'CrudMatrixReadCtrl'
       })
@@ -30,15 +30,15 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/treasury.html',
         controller: 'TreasuryCtrl'
       })
-      .when('/fundation/:funId/:page/create', {
+      .when('/fundation/:funId/:pageName/create', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/fundation/:funId/:page/update/:entry', {
+      .when('/fundation/:funId/:pageName/update/:entry', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/fundation/:funId/:page', {
+      .when('/fundation/:funId/:pageName/:pageNum?', {
         templateUrl: 'partials/crud_matrix_read.html',
         controller: 'CrudMatrixReadCtrl'
       })

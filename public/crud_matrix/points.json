@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/points?isRemoved=False&limit=30",
+  "get_url" : "/points?isRemoved=False",
   "dataStructure" : 
   [
     {

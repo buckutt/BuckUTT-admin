@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/periods?isRemoved=False&limit=30",
+  "get_url" : "/periods?isRemoved=False",
   "dataStructure" : 
   [
     {

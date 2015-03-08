@@ -2,6 +2,7 @@
 
 body {
   padding-top: 20px;
+  overflow-y:scroll;
 }
 
 .phones {
