@@ -24,8 +24,8 @@
             <span class="caret"></span>
           </button>
           <ul ng-switch="mv_selected" class="dropdown-menu" role="menu">
-            <li ng-switch-when="0" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'divider':($root.page.num == num)}"><a href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a></li>
-            <li ng-switch-default  ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'divider':($root.page.num == num)}"><a href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a></li>
+            <li ng-switch-when="0" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}"><a href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a></li>
+            <li ng-switch-default  ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}"><a href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a></li>
           </ul>
         </div>
         <button type="button" class="btn btn-default" ng-if="page_dropDown().length <= 3 && $root.page.num == 2">{{$root.page.num}}</button>

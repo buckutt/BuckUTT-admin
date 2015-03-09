@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-var buckuttControllers = angular.module('buckuttControllers', []);
+var buckuttControllers = angular.module('buckuttControllers', ['ui.bootstrap']);
 
 buckuttControllers.controller('AppCtrl', ['$rootScope', '$scope', '$location', '$http',
   function($rootScope,$scope,$location,$http) {
@@ -189,6 +189,21 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
     $rootScope.funId = $routeParams.funId;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
+      
+    $scope.opened = {};
+    $scope.open = function($event,field) {
+      $event.preventDefault();
+      $event.stopPropagation();
+
+      $scope.opened[field] = true;
+    };
+    
+    var date_watch = function() {
+      if($scope.date_start && $scope.date_end){
+        
+      }
+    };
+    $scope.$watch('date_start', date_watch);
+    $scope.$watch('date_end', date_watch);
   }]
 );
-

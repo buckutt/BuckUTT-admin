@@ -1,3 +1,35 @@
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-    <p>Treasury</p>
+    
+    <!-- Page name -->
+    <h2 class="sub-header">{{$root.pageName | capitalize}}</h2>
+    
+    <!-- Date select -->
+    <h3 style="float:right;margin-top:0px;"><small>Epargne globale actuelle: </small><span class="label label-primary label-as-badge">10 000 €</span></h3>
+
+    <div class="row" style="width: 500px;">
+        <div class="col-lg-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
+              
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event,'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+        <div class="col-lg-6">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
+              
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event,'end')"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
+    </div>
+    <h3><span ng-if="date_start"><small>From: </small><span class="label label-warning">{{date_start | date:'fullDate' }} 00:00:00</span></span> 
+    <span ng-if="date_end"><small>To: </small><span class="label label-warning">{{date_end | date:'fullDate' }} 23:59:59</span></span></h3>
+    
+    <div ng-if="date_start && date_end" class="table-responsive data-main-content">
+      dsjfhdjshfdjsihfdsk
+    </div>
   </div>

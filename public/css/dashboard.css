@@ -5,8 +5,17 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   padding-top: 50px;
+  overflow-y:scroll;
 }
 
+/* Bootstrap-ui */
+.nav, .pagination, .carousel, .panel-title a { 
+  cursor: pointer; 
+}
+
+.label-as-badge {
+    border-radius: 1em;
+}
 
 /*
  * Global add-ons
@@ -101,22 +110,3 @@ body {
   margin-top: 0;
 }
 
-
-/*
- * Placeholder dashboard ideas
- */
-
-.placeholders {
-  margin-bottom: 30px;
-  text-align: center;
-}
-.placeholders h4 {
-  margin-bottom: 0;
-}
-.placeholder {
-  margin-bottom: 20px;
-}
-.placeholder img {
-  display: inline-block;
-  border-radius: 50%;
-}
