@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var http = require('http');
+var rest = require('restler');
 
 router.get('/', function(req, res) {
   console.log('API '+req.originalUrl)
@@ -15,22 +16,22 @@ router.get('/', function(req, res) {
   
   //verify rights here...
   
-
-  http.get('http://127.0.0.1:8081'+req.originalUrl, function(api_res) {
-    console.log('http://127.0.0.1:8081'+req.originalUrl);
-    console.log("Got response: " + api_res.statusCode);
-    var body = '';
-    api_res.on('data', function(chunk) {
-      body += chunk;
-    });
-    api_res.on('end', function() {
-      res.send(body);
-    });
-  }).on('error', function(e) {
-    console.log("Got error: " + e.message);
-    var r = {};
-    r.error = {"type":"API_ERROR","code":1,"message":"Could not connect to api"};
-    res.send(r);
+  var options = {
+      headers: {
+          'Accept': '*/*',
+          'User-Agent': 'Restling for node.js',
+          'Authorization': 'Bearer ' + sess.user.token
+      }
+  };
+  rest.get('http://127.0.0.1:8081'+req.originalUrl, options).on('complete', function(result) {
+    if (result instanceof Error) {
+      console.log("Got error: " + result.message);
+      var r = {};
+      r.error = {"type":"API_ERROR","code":1,"message":"Could not connect to api"};
+      res.send(r);
+    } else {
+      res.send(result);
+    }
   });
 });
 
