@@ -1,15 +1,22 @@
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     
+    <!-- Global Clearance -->
+    <h3 style="float:right;margin-bottom:0px;"><small>Actual global clearance: </small><span class="label label-primary label-as-badge">{{clearance | currency2:'€'}}</span></h3>
+    
     <!-- Page name -->
     <h2 class="sub-header">{{$root.pageName | capitalize}}</h2>
     
+    <!-- Time select -->
+    <input type="time" class="form-control time-input" placeholder="To" ng-model="time_end" required>
+    <input type="time" class="form-control time-input" placeholder="From" ng-model="time_start" required>
+    
     <!-- Date select -->
-    <h3 style="float:right;margin-top:0px;"><small>Epargne globale actuelle: </small><span class="label label-primary label-as-badge">10 000 €</span></h3>
-
     <div class="row" style="width: 500px;">
         <div class="col-lg-6">
             <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
+              <span class="input-group-addon" id="sizing-addon1">From</span>
+              <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
+              datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
               
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event,'start')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -18,7 +25,9 @@
         </div>
         <div class="col-lg-6">
             <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
+              <span class="input-group-addon" id="sizing-addon1">To</span>
+              <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
+              datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
               
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event,'end')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -26,10 +35,65 @@
             </p>
         </div>
     </div>
-    <h3><span ng-if="date_start"><small>From: </small><span class="label label-warning">{{date_start | date:'fullDate' }} 00:00:00</span></span> 
-    <span ng-if="date_end"><small>To: </small><span class="label label-warning">{{date_end | date:'fullDate' }} 23:59:59</span></span></h3>
     
+    <!-- Display Selected Date -->
+    <h3>
+      <span ng-if="date_start">
+        <small>From: </small>
+        <span class="label label-warning">{{date_start | date:'fullDate' }} {{time_start | date:'HH:mm'}}:00</span>
+      </span> 
+      <span ng-if="date_end">
+        <small>To: </small>
+        <span class="label label-warning">{{date_end | date:'fullDate' }} {{time_end | date:'HH:mm'}}:59</span>
+      </span>
+    </h3>
+    
+    <!-- Two data tables -->
     <div ng-if="date_start && date_end" class="table-responsive data-main-content">
-      dsjfhdjshfdjsihfdsk
+      <div ng-if="date_start > date_end" class="alert alert-danger" role="alert">
+        Start date must be anterior to end date
+      </div>
+      <div ng-if="date_start <= date_end">
+      <div class="col-lg-6">
+        <h4 class="sub-header">Reloads</h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Point</th>
+              <th>ReloadType</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="entry in tables.reloads">
+              <td>{{entry.PointName}}</td>
+              <td>{{entry.ReloadTypeName}}</td>
+              <td>{{entry.Amount | currency2:'€'}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="!tables.reloads" class="alert alert-info" role="alert">No data for this period</div>
+      </div>
+      <div class="col-lg-6">
+        <h4 class="sub-header">Purchases</h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Fundation</th>
+              <th>Point</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="entry in tables.purchases">
+              <td>{{entry.FundationName}}</td>
+              <td>{{entry.PointName}}</td>
+              <td>{{entry.Amount | currency2:'€'}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="!tables.purchases" class="alert alert-info" role="alert">No data for this period</div>
+      </div>
+      </div>
     </div>
   </div>

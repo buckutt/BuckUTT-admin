@@ -13,6 +13,17 @@ body {
   cursor: pointer; 
 }
 
+.time-input {
+  float:right;
+  width:95px;
+  margin-left: 15px;
+}
+.time-checkbox{
+  float:right;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
 .label-as-badge {
     border-radius: 1em;
 }

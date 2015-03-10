@@ -183,14 +183,25 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
   }]
 );
 
-buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routeParams', '$http',
-  function($rootScope,$scope,$routeParams,$http) {
+buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routeParams', '$http', '$filter',
+  function($rootScope,$scope,$routeParams,$http,$filter) {
     $rootScope.pageName = 'treasury';
     $rootScope.funId = $routeParams.funId;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
-      
+    
+    $http.get('/api/services/treasury/clearance').success(function(res) {
+      $scope.clearance = res.data.clearance;
+    });
+        
+    var init_time = function(){
+      $scope.time_start = new Date(0, 0, 0, 0, 0, 0);//00h00
+      $scope.time_end   = new Date(0, 0, 0, 23, 59, 0);//23h59
+    };
+    init_time();
+    
     $scope.opened = {};
+    $scope.dateOptions = {startingDay: 1};
     $scope.open = function($event,field) {
       $event.preventDefault();
       $event.stopPropagation();
@@ -199,11 +210,26 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
     };
     
     var date_watch = function() {
-      if($scope.date_start && $scope.date_end){
+      if(!$scope.time_start || !$scope.time_end)
+        init_time();
+      
+      if($scope.date_start && $scope.date_end && $scope.date_start <= $scope.date_end){
+        var req_range = 'DateStart='+$filter('date')($scope.date_start, 'yyyy-MM-dd')+' '+$filter('date')($scope.time_start, 'HH:mm')+':00';
+        req_range    += '&DateEnd='+$filter('date')($scope.date_end, 'yyyy-MM-dd')+' '+$filter('date')($scope.time_end, 'HH:mm')+':59';
+        $scope.tables = {'reloads':[],'purchases':[]};
         
+        $http.get('/api/services/treasury/reloads?'+req_range).success(function(res) {
+          $scope.tables.reloads = res.data;
+        });
+        
+        $http.get('/api/services/treasury/purchases?'+req_range).success(function(res) {
+          $scope.tables.purchases = res.data;
+        });
       }
     };
     $scope.$watch('date_start', date_watch);
     $scope.$watch('date_end', date_watch);
+    $scope.$watch('time_start', date_watch);
+    $scope.$watch('time_end', date_watch);
   }]
 );

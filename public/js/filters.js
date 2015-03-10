@@ -26,7 +26,8 @@ buckuttAdminApp.filter('currency2', ['numberFilter', function(numberFilter) {
     if (input == null || !input)
       return input;
     
-    input = numberFilter(parseFloat(input)/100,2);
+    input = numberFilter(parseFloat(input)/100,2)
+          .replace(',', ' ').replace('.', ',');
     return input+' '+currency;
   }
 }]);

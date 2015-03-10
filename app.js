@@ -40,8 +40,6 @@ app.post('/login',
     var sess=req.session;
     var r = {};
     
-
-console.log('LOGIN');
     if (!req.form.isValid) {
       r.error = {"type":"AUTH_ERROR","code":1,"message":req.form.errors};
     }
