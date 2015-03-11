@@ -5,6 +5,16 @@
       <small>Actual global clearance: </small><span class="label label-primary label-as-badge">{{clearance | currency2:'€'}}</span>
     </h3>
     
+    <!-- Option: recap/list format and aggregate/split promotions -->
+    <div ng-if="$root.funId" class="btn-group pull-right" style="margin-top:15px;margin-left:15px;">
+      <button type="button" ng-attr-class="btn btn-default blue {{!split_promo ? 'active' : ''}}" ng-click="splitPromo(false)">Aggregate promotions</button>
+      <button type="button" ng-attr-class="btn btn-default blue {{split_promo ? 'active' : ''}}" ng-click="splitPromo(true)">Split promotions</button>
+    </div>
+    <div ng-if="$root.funId" class="btn-group pull-right" style="margin-top:15px;">
+      <button type="button" ng-attr-class="btn btn-default blue {{recap ? 'active' : ''}}" ng-click="doRecap(true)">Recap</button>
+      <button type="button" ng-attr-class="btn btn-default blue {{!recap ? 'active' : ''}}" ng-click="doRecap(false)">List</button>
+    </div>
+    
     <!-- Page name -->
     <span ng-switch="$root.funId">
       <h2 ng-switch-when="undefined" class="sub-header">{{$root.pageName | capitalize}}</h2>

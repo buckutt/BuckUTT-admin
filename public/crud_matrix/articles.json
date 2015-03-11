@@ -4,7 +4,7 @@
   [
   ],
   "get_url" : "/articles?embed=prices&type=product&isRemoved=False",
-  "fun_location" : "Prices",
+  "fun_location" : "Price",
   "dataStructure" : 
   [
     {

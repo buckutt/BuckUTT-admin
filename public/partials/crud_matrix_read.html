@@ -3,7 +3,7 @@
     <!-- mv select button, hidden when no selection is needed -->
     <div ng-if="mv_count > 1" class="btn-group pull-right">
       <button ng-repeat="col in mv_cols" type="button" ng-click="mvSelect(col.pos)"
-              ng-attr-class="btn btn-default blue {{col.pos == mv_selected && 'active' || ''}}">{{col.name | capitalize}}</button>
+              ng-attr-class="btn btn-default blue {{col.pos == mv_selected ? 'active' : ''}}">{{col.name | capitalize}}</button>
     </div>
     
     <!-- Page name -->

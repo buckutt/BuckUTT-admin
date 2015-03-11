@@ -197,7 +197,9 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
     $scope.include_url = 'partials/treasury_'+($rootScope.funId ? 'fundation' : 'general')+'.html';
-
+    $scope.split_promo = false;
+    $scope.recap = true;
+    
     if (!$rootScope.funId)
       $http.get('/api/services/treasury/clearance').success(function(res) {
         $scope.clearance = res.data.clearance;
@@ -218,28 +220,54 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
       $scope.opened[field] = true;
     };
     
-    var date_watch = function() {
+    var watcher = function() {
       if(!$scope.time_start || !$scope.time_end)
         init_time();
       
       if($scope.date_start && $scope.date_end && $scope.date_start <= $scope.date_end){
         var req_range = 'DateStart='+$filter('date')($scope.date_start, 'yyyy-MM-dd')+' '+$filter('date')($scope.time_start, 'HH:mm')+':00';
         req_range    += '&DateEnd='+$filter('date')($scope.date_end, 'yyyy-MM-dd')+' '+$filter('date')($scope.time_end, 'HH:mm')+':59';
-        $scope.tables = {'reloads':[],'purchases':[]};
         
-        $http.get('/api/services/treasury/reloads?'+req_range).success(function(res) {
-          $scope.tables.reloads = res.data ? res.data : 'empty';
-        });
-        
-        $http.get('/api/services/treasury/purchases?'+req_range).success(function(res) {
-          $scope.tables.purchases = res.data ? res.data : 'empty';
-        });
+        if ($rootScope.funId) {//Fundation specific
+          if (!$scope.recap){
+            $scope.table = 'empty';
+            return;
+          }
+          var req = '/api/services/treasury/purchases?'+req_range+'&FundationId='+$rootScope.funId;
+          if ($scope.split_promo)
+            req += '&split_promo=1';
+          
+          $http.get(req).success(function(res) {
+            $scope.table = res.data ? res.data : 'empty';
+          });
+        }
+        else {//general treasury
+          $scope.tables = {'reloads':[],'purchases':[]};
+          
+          $http.get('/api/services/treasury/reloads?'+req_range).success(function(res) {
+            $scope.tables.reloads = res.data ? res.data : 'empty';
+          });
+          
+          $http.get('/api/services/treasury/purchases?'+req_range).success(function(res) {
+            $scope.tables.purchases = res.data ? res.data : 'empty';
+          });
+        }
       }
     };
     
-    $scope.$watch('date_start', date_watch);
-    $scope.$watch('date_end', date_watch);
-    $scope.$watch('time_start', date_watch);
-    $scope.$watch('time_end', date_watch);
+    $scope.$watch('date_start', watcher);
+    $scope.$watch('date_end', watcher);
+    $scope.$watch('time_start', watcher);
+    $scope.$watch('time_end', watcher);
+    $scope.$watch('recap', watcher);
+    $scope.$watch('split_promo', watcher);
+    
+    $scope.doRecap = function(b) {
+      $scope.recap = b;
+    };
+    
+    $scope.splitPromo = function(b) {
+      $scope.split_promo = b;
+    };
   }]
 );

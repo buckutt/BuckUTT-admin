@@ -2,7 +2,28 @@
       <div ng-if="date_start > date_end || time_start > time_end" class="alert alert-danger" role="alert">
         Start date must be anterior to end date
       </div>
+      <!-- {"PurchasesCount":3,"PurchasesSum":150,"ArticlePrice":50,"ArticleName":"Balisto Jaune","PointName":"Foyer"} -->
       <div ng-if="date_start <= date_end && time_start <= time_end">
-        <p>{{$root.funList[funId].name}}</p>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Point Name</th>
+              <th>Article Name</th>
+              <th>Count</th>
+              <th>Unit Price</th>
+              <th>Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr  ng-if="table != 'empty'" ng-repeat="entry in table">
+              <td>{{entry.PointName}}</td>
+              <td>{{entry.ArticleName}}</td>
+              <td>{{entry.PurchasesCount}}</td>
+              <td>{{entry.ArticlePrice | currency2:'€'}}</td>
+              <td>{{entry.PurchasesSum | currency2:'€'}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="table == 'empty'" class="alert alert-info" role="alert">No data for this period</div>
       </div>
     </div>
