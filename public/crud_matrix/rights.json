@@ -12,22 +12,22 @@
     {
       "name" : "UserId",
       "foreign" : "/users",
-      "filter" : "foreign:firstname, lastname"
+      "filter" : "foreign>>firstname, lastname"
     },
     {
       "name" : "RightId",
       "foreign" : "/rights",
-      "filter" : "foreign:name"
+      "filter" : "foreign>>name"
     },
     {
       "name" : "PointId",
       "foreign" : "/points",
-      "filter" : "foreign:name"
+      "filter" : "foreign>>name"
     },
     {
       "name" : "PeriodId",
       "foreign" : "/periods",
-      "filter" : "foreign:name"
+      "filter" : "foreign>>name"
     }
   ]
 }

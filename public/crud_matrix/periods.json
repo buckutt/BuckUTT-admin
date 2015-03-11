@@ -13,10 +13,12 @@
       "name" : "name"
     },
     {
-      "name" : "startDate"
+      "name" : "startDate",
+      "filter" : "date>>dd/MM/yyyy HH:mm:ss"
     },
     {
-      "name" : "endDate"
+      "name" : "endDate",
+      "filter" : "date>>dd/MM/yyyy HH:mm:ss"
     }
   ]
 }

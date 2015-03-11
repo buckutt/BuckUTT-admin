@@ -1,0 +1,48 @@
+    <!-- Two data tables -->
+    <div ng-if="date_start && date_end" class="table-responsive data-main-content">
+      <div ng-if="date_start > date_end || time_start > time_end" class="alert alert-danger" role="alert">
+        Start date must be anterior to end date
+      </div>
+      <div ng-if="date_start <= date_end && time_start <= time_end">
+        <div class="col-lg-6">
+          <h4 class="sub-header">Reloads</h4>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Point</th>
+                <th>ReloadType</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr  ng-if="tables.reloads != 'empty'" ng-repeat="entry in tables.reloads">
+                <td>{{entry.PointName}}</td>
+                <td>{{entry.ReloadTypeName}}</td>
+                <td>{{entry.Amount | currency2:'€'}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div ng-if="tables.reloads == 'empty'" class="alert alert-info" role="alert">No data for this period</div>
+        </div>
+        <div class="col-lg-6">
+          <h4 class="sub-header">Purchases</h4>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Fundation</th>
+                <th>Point</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-if="tables.purchases != 'empty'" ng-repeat="entry in tables.purchases">
+                <td>{{entry.FundationName}}</td>
+                <td>{{entry.PointName}}</td>
+                <td>{{entry.Amount | currency2:'€'}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div ng-if="tables.purchases == 'empty'" class="alert alert-info" role="alert">No data for this period</div>
+        </div>
+      </div>
+    </div>

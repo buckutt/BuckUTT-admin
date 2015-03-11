@@ -4,6 +4,7 @@
   [
   ],
   "get_url" : "/articles?embed=prices&type=product&isRemoved=False",
+  "fun_location" : "Prices",
   "dataStructure" : 
   [
     {
@@ -22,17 +23,17 @@
       [
         {
           "name" : "credit",
-          "filter" : "currency:\u20AC"
+          "filter" : "currency>>\u20AC"
         },
         {
           "name" : "PeriodId",
           "foreign" : "/periods",
-          "filter" : "foreign:name"
+          "filter" : "foreign>>name"
         },
         {
           "name" : "GroupId",
           "foreign" : "/groups",
-          "filter" : "foreign:name"
+          "filter" : "foreign>>name"
         }
       ]
     }

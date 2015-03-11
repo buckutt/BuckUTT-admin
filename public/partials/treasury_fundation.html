@@ -1,0 +1,8 @@
+    <div ng-if="date_start && date_end" class="table-responsive data-main-content">
+      <div ng-if="date_start > date_end || time_start > time_end" class="alert alert-danger" role="alert">
+        Start date must be anterior to end date
+      </div>
+      <div ng-if="date_start <= date_end && time_start <= time_end">
+        <p>{{$root.funList[funId].name}}</p>
+      </div>
+    </div>

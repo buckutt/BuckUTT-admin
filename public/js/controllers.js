@@ -68,14 +68,20 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
 
     create_crud_matrix($rootScope, $scope, $http, function() {
       var base_req = '/api'+$scope.matrix.get_url;
-      if($routeParams.funId)
-        base_req += '&FundationId='+$routeParams.funId;
+      if($routeParams.funId){
+        var fun_location = $scope.matrix.fun_location ? $scope.matrix.fun_location+'.' : '';
+        base_req += '&'+fun_location+'FundationId='+$routeParams.funId;
+      }
       
       //paging
       var page_size = 50;
       var offset = ($rootScope.page.num-1)*page_size;
       
       $http.get(base_req+'&limit='+page_size+'&offset='+offset).success(function(res) {
+        if (res.error){
+          $scope.error = res.error;
+          return
+        }
         //set dataLength for counting number of values on multi-valued fields
         for(var i in res.data){
           if (!angular.isNumber(parseInt(i)))
@@ -105,12 +111,13 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
             }
           }
         }
-        $scope.table = res.data;
+        
+        $scope.table = res.data ? res.data : 'empty';
       });
       
       var embed_s = base_req.indexOf('embed');
       var count_req = base_req;
-      if (embed_s != 1){ //remove embed state for counting
+      if (embed_s != -1){ //remove embed state for counting
         var embed_e = base_req.indexOf('&');
         count_req = base_req.substring(0,embed_s)+base_req.substring(embed_e+1);
       }
@@ -189,10 +196,12 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
     $rootScope.funId = $routeParams.funId;
     $scope.parseInt = parseInt; // to be moved away somewhere else
     $scope.angular = angular; // to be moved away somewhere else
-    
-    $http.get('/api/services/treasury/clearance').success(function(res) {
-      $scope.clearance = res.data.clearance;
-    });
+    $scope.include_url = 'partials/treasury_'+($rootScope.funId ? 'fundation' : 'general')+'.html';
+
+    if (!$rootScope.funId)
+      $http.get('/api/services/treasury/clearance').success(function(res) {
+        $scope.clearance = res.data.clearance;
+      });
         
     var init_time = function(){
       $scope.time_start = new Date(0, 0, 0, 0, 0, 0);//00h00
@@ -219,14 +228,15 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
         $scope.tables = {'reloads':[],'purchases':[]};
         
         $http.get('/api/services/treasury/reloads?'+req_range).success(function(res) {
-          $scope.tables.reloads = res.data;
+          $scope.tables.reloads = res.data ? res.data : 'empty';
         });
         
         $http.get('/api/services/treasury/purchases?'+req_range).success(function(res) {
-          $scope.tables.purchases = res.data;
+          $scope.tables.purchases = res.data ? res.data : 'empty';
         });
       }
     };
+    
     $scope.$watch('date_start', date_watch);
     $scope.$watch('date_end', date_watch);
     $scope.$watch('time_start', date_watch);

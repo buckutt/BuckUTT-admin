@@ -7,8 +7,8 @@
     </div>
     
     <!-- Page name -->
-    <span ng-switch="mv_selected">
-      <h2 ng-switch-when="0" class="sub-header">{{matrix.name | capitalize}}</h2>
+    <span ng-switch="$root.funId">
+      <h2 ng-switch-when="undefined" class="sub-header">{{matrix.name | capitalize}}</h2>
       <h2 ng-switch-default class="sub-header">{{$root.funList[funId].name}} - {{matrix.name | capitalize}}</h2>
     </span>
     
@@ -23,9 +23,11 @@
             {{$root.page.num}}
             <span class="caret"></span>
           </button>
-          <ul ng-switch="mv_selected" class="dropdown-menu" role="menu">
-            <li ng-switch-when="0" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}"><a href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a></li>
-            <li ng-switch-default  ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}"><a href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a></li>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-switch="$root.funId" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}">
+              <a ng-switch-when="undefined" href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a>
+              <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a>
+            </li>
           </ul>
         </div>
         <button type="button" class="btn btn-default" ng-if="page_dropDown().length <= 3 && $root.page.num == 2">{{$root.page.num}}</button>
@@ -34,11 +36,13 @@
       </div>
       
       <button type="button" class="btn btn-warning">Search & Sort</button>
-      <span ng-switch="mv_selected">
-        <a ng-switch-when="0" href="/#/general/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
+      <span ng-switch="$root.funId">
+        <a ng-switch-when="undefined" href="/#/general/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
         <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
       </span>
     </p>
+    
+    <div ng-if="error" class="alert alert-danger" role="alert">{{error.type}}<br />{{error.message}}</div>
     
     <div class="table-responsive data-main-content">
       <table class="table table-striped">
@@ -61,7 +65,7 @@
           </tr>
         </thead>
         <!-- each item is a tbody -->
-        <tbody ng-repeat="entry in table">
+        <tbody ng-if="table != 'empty'" ng-repeat="entry in table">
           <!-- for multi-valued items, print n lines -->
           <tr ng-repeat="line in entry[matrix.dataStructure[mv_selected].name]">
             <!-- first line of the item (with buttons and stuff) -->
@@ -104,6 +108,6 @@
         <tbody><!-- keep this tbody, it is useful -->
         </tbody>
       </table>
-      <div ng-if="!table" class="alert alert-info" role="alert">No data</div>
+      <div ng-if="table == 'empty'" class="alert alert-info" role="alert">No data</div>
     </div>
   </div>

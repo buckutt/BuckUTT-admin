@@ -95,30 +95,33 @@ buckuttAdminApp.filter('translator', function() {
  * each filter has to be named here in the switch(filter)
  * Must be defined after all other filters it uses
  */
-buckuttAdminApp.filter('tableFilter', ['capitalizeFilter','currency2Filter', 'foreignFilter', 'translatorFilter', function(capitalizeFilter,currency2Filter,foreignFilter,translatorFilter) {
-  return function(input, filterInfos) {
-    if (input == null || !input || !filterInfos)
-      return input;
-    
-    var f = filterInfos.split(':');
-    var filter = f[0];
-    var arg = f[1] ? f[1] : '';
-    
-    switch(filter){
-      /* didn't make generic code because with dependency injection you have 
-       * to edit this function any way when you want to add a filter
-       */
-      case 'currency':
-        return currency2Filter(input,arg);
-      case 'foreign':
-        return foreignFilter(input,arg);
-      case 'translator':
-        return translatorFilter(input,arg);
-      default: //case: nofilter
+buckuttAdminApp.filter('tableFilter', ['capitalizeFilter','currency2Filter', 'foreignFilter', 'translatorFilter', 'dateFilter',
+  function(capitalizeFilter,currency2Filter,foreignFilter,translatorFilter,dateFilter) {
+    return function(input, filterInfos) {
+      if (input == null || !input || !filterInfos)
         return input;
+      
+      var f = filterInfos.split('>>');
+      var filter = f[0];
+      var arg = f[1] ? f[1] : '';
+      
+      switch(filter){
+        /* didn't make generic code because with dependency injection you have 
+         * to edit this function any way when you want to add a filter
+         */
+        case 'currency':
+          return currency2Filter(input,arg);
+        case 'foreign':
+          return foreignFilter(input,arg);
+        case 'translator':
+          return translatorFilter(input,arg);
+        case 'date':
+          return dateFilter(input,arg);
+        default: //case: nofilter
+          return input;
+      }
     }
-  }
-}]);
+  }]);
 
 /*
  * Transform array to string separated with '|' and use tableFilter on each 
