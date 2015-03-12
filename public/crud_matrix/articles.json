@@ -14,9 +14,6 @@
       "name" : "name"
     },
     {
-      "name" : "type"
-    },
-    {
       "name" : "Prices",
       "multi_valued" : true,
       "subFields" : 
@@ -27,15 +24,26 @@
         },
         {
           "name" : "PeriodId",
+          "display_name" : "Period",
           "foreign" : "/periods",
           "filter" : "foreign>>name"
         },
         {
           "name" : "GroupId",
+          "display_name" : "Group",
           "foreign" : "/groups",
           "filter" : "foreign>>name"
         }
       ]
+    },
+    {
+      "name" : "stock",
+      "filter" : "translator>>-1->Infinit"
+    },
+    {
+      "name" : "isSingle",
+      "display_name" : "Unique",
+      "filter" : "translator>>1->Yes, 0->No"
     }
   ]
 }

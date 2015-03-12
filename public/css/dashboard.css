@@ -65,6 +65,11 @@ body {
 .table-label {
   margin-right: 5px;
 }
+
+.table-numeric {
+  text-align : right;
+  padding-right: 15px;
+}
     
 /* Hide for mobile, show later */
 .sidebar {

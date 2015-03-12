@@ -2,17 +2,13 @@
     
     <!-- Global Clearance -->
     <h3 ng-if="!$root.funId" style="float:right;margin-bottom:0px;">
-      <small>Actual global clearance: </small><span class="label label-primary label-as-badge">{{clearance | currency2:'€'}}</span>
+      <small>Current global clearance: </small><span class="label label-primary label-as-badge">{{clearance | currency2:'€'}}</span>
     </h3>
     
-    <!-- Option: recap/list format and aggregate/split promotions -->
-    <div ng-if="$root.funId" class="btn-group pull-right" style="margin-top:15px;margin-left:15px;">
-      <button type="button" ng-attr-class="btn btn-default blue {{!split_promo ? 'active' : ''}}" ng-click="splitPromo(false)">Aggregate promotions</button>
-      <button type="button" ng-attr-class="btn btn-default blue {{split_promo ? 'active' : ''}}" ng-click="splitPromo(true)">Split promotions</button>
-    </div>
+    <!-- Options -->
     <div ng-if="$root.funId" class="btn-group pull-right" style="margin-top:15px;">
-      <button type="button" ng-attr-class="btn btn-default blue {{recap ? 'active' : ''}}" ng-click="doRecap(true)">Recap</button>
-      <button type="button" ng-attr-class="btn btn-default blue {{!recap ? 'active' : ''}}" ng-click="doRecap(false)">List</button>
+      <button type="button" ng-attr-class="btn btn-default blue {{split_promo ? 'active' : ''}}" ng-click="splitPromo()">Show promotion content</button>
+      <button type="button" ng-attr-class="btn btn-default blue {{!recap ? 'active' : ''}}" ng-click="doRecap()">Show all purchases</button>
     </div>
     
     <!-- Page name -->
@@ -27,29 +23,33 @@
     
     <!-- Date select -->
     <div class="row" style="width: 500px;">
-        <div class="col-lg-6">
-            <p class="input-group">
-              <span class="input-group-addon" id="sizing-addon1">From</span>
-              <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
-              datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
-              
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event,'start')"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
-        </div>
-        <div class="col-lg-6">
-            <p class="input-group">
-              <span class="input-group-addon" id="sizing-addon1">To</span>
-              <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
-              datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
-              
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event,'end')"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
-        </div>
+      <div class="col-lg-6">
+          <p class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">From</span>
+            <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
+            datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
+            
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open($event,'start')"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+          </p>
+      </div>
+      <div class="col-lg-6">
+          <p class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">To</span>
+            <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
+            datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
+            
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open($event,'end')"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+          </p>
+      </div>
     </div>
+    
+    <h3 ng-if="table.length > 0" style="float:right;margin-bottom:0px;">
+      <small>Total: </small><span class="label label-success label-as-badge">{{totalAmount | currency2:'€'}}</span>
+    </h3>
     
     <!-- Display Selected Date -->
     <h3>

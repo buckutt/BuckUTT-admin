@@ -238,17 +238,28 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
             req += '&split_promo=1';
           
           $http.get(req).success(function(res) {
+            $scope.totalAmount = 0;
+            for (var i in res.data)
+              $scope.totalAmount += res.data[i].PurchasesSum;
+            
             $scope.table = res.data ? res.data : 'empty';
           });
         }
         else {//general treasury
           $scope.tables = {'reloads':[],'purchases':[]};
+          $scope.totals = {'reloads':0,'purchases':0};
           
           $http.get('/api/services/treasury/reloads?'+req_range).success(function(res) {
+            for (var i in res.data)
+              $scope.totals.reloads += res.data[i].Amount;
+            
             $scope.tables.reloads = res.data ? res.data : 'empty';
           });
           
           $http.get('/api/services/treasury/purchases?'+req_range).success(function(res) {
+            for (var i in res.data)
+              $scope.totals.purchases += res.data[i].Amount;
+            
             $scope.tables.purchases = res.data ? res.data : 'empty';
           });
         }
@@ -262,12 +273,12 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$routePa
     $scope.$watch('recap', watcher);
     $scope.$watch('split_promo', watcher);
     
-    $scope.doRecap = function(b) {
-      $scope.recap = b;
+    $scope.doRecap = function() {
+      $scope.recap = !$scope.recap;
     };
     
-    $scope.splitPromo = function(b) {
-      $scope.split_promo = b;
+    $scope.splitPromo = function() {
+      $scope.split_promo = !$scope.split_promo;
     };
   }]
 );

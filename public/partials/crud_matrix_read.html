@@ -49,7 +49,7 @@
         <thead>
           <!-- mono-line when no multi-fields -->
           <tr ng-if="mv_selected == 0 || matrix.dataStructure[mv_selected].dataLength == 0">
-            <th ng-repeat="col in matrix.dataStructure">{{col.name | capitalize}}</th>
+            <th ng-repeat="col in matrix.dataStructure">{{col.display_name ? col.display_name : col.name}}</th>
             <th>Action</th>
           </tr>
           
@@ -57,11 +57,11 @@
           <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
             <th ng-repeat="col in matrix.dataStructure" 
                 ng-attr-rowspan="{{$index == mv_selected && 'none' || '2'}}"
-                ng-attr-colspan="{{$index == mv_selected && col.dataLength || 'none'}}">{{col.name | capitalize}}</th>
+                ng-attr-colspan="{{$index == mv_selected && col.dataLength || 'none'}}">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
             <th ng-attr-rowspan="{{matrix.dataStructure[mv_selected].dataLength > 0 && '2' || 'none'}}">Action</th>
           </tr>
           <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
-            <th ng-repeat="col in matrix.dataStructure[mv_selected].subFields">{{col.name | capitalize}}</th>
+            <th ng-repeat="col in matrix.dataStructure[mv_selected].subFields">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
           </tr>
         </thead>
         <!-- each item is a tbody -->

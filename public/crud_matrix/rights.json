@@ -11,21 +11,31 @@
     },
     {
       "name" : "UserId",
+      "display_name" : "User",
       "foreign" : "/users",
       "filter" : "foreign>>firstname, lastname"
     },
     {
       "name" : "RightId",
+      "display_name" : "Right",
       "foreign" : "/rights",
       "filter" : "foreign>>name"
     },
     {
       "name" : "PointId",
+      "display_name" : "Point",
       "foreign" : "/points",
       "filter" : "foreign>>name"
     },
     {
+      "name" : "FundationId",
+      "display_name" : "Fundation",
+      "foreign" : "/fundations",
+      "filter" : "foreign>>name"
+    },
+    {
       "name" : "PeriodId",
+      "display_name" : "Period",
       "foreign" : "/periods",
       "filter" : "foreign>>name"
     }

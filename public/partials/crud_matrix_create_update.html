@@ -14,7 +14,7 @@
         <div ng-repeat="field in matrix.dataStructure" ng-if="!field.multi_valued" ng-attr-class="{{!field.multi_valued && 'row' || ''}}">
 
           <div ng-if="field.name != 'id' || entryId != 0" class="form-group col-lg-6" >
-                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2">{{field.name | capitalize}} :</label>
+                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2">{{field.display_name ? field.display_name : (field.name | capitalize)}}</label>
                 <div class="col-lg-10">
                   <input type="text" class="form-control"
                          ng-disabled="{{field.name == 'id'}}"
@@ -25,12 +25,12 @@
         </div>
         <div class="row">
           <div class="form-group col-lg-6">
-          <label for="article-tab" class="col-lg-2">Tab :</label>
+          <label for="article-tab" class="col-lg-2">Right</label>
             <div class="col-lg-10">
               <select id="article-tab" class="form-control" >
-                <option>None</option>
-                <option>Barres</option>
-                <option>Cannettes</option>
+                <option>Sell</option>
+                <option>Reload</option>
+                <option>Admin</option>
               </select>
             </div>
           </div>

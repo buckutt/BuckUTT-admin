@@ -9,18 +9,20 @@
             <tr>
               <th>Point Name</th>
               <th>Article Name</th>
-              <th>Count</th>
-              <th>Unit Price</th>
-              <th>Total Amount</th>
+              <th class="table-numeric">Count</th>
+              <th class="table-numeric">Unit Price</th>
+              <th class="table-numeric">Total Amount</th>
             </tr>
           </thead>
           <tbody>
             <tr  ng-if="table != 'empty'" ng-repeat="entry in table">
               <td>{{entry.PointName}}</td>
               <td>{{entry.ArticleName}}</td>
-              <td>{{entry.PurchasesCount}}</td>
-              <td>{{entry.ArticlePrice | currency2:'€'}}</td>
-              <td>{{entry.PurchasesSum | currency2:'€'}}</td>
+              <td class="table-numeric">{{entry.PurchasesCount | numeric}}</td>
+              <td class="table-numeric" ng-if="entry.ArticlePrice > 0">{{entry.ArticlePrice | currency2:'€'}}</td>
+              <td class="table-numeric" ng-if="entry.ArticlePrice > 0">{{entry.PurchasesSum | currency2:'€'}}</td>
+              <td class="table-numeric" ng-if="entry.ArticlePrice == 0"><span class="label label-primary label-as-badge">Promotion</span></td>
+              <td class="table-numeric" ng-if="entry.ArticlePrice == 0"><span class="label label-primary label-as-badge">Promotion</span></td>
             </tr>
           </tbody>
         </table>

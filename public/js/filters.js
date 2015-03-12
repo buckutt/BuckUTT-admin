@@ -17,17 +17,31 @@ buckuttAdminApp.filter('capitalize', function() {
 });
 
 /*
+ * Takes 12507 and turns it into 12 507
+ */
+buckuttAdminApp.filter('numeric', ['numberFilter', function(numberFilter) {
+  return function(input, digits) {
+    if (input == null || !input)
+      return input;
+    
+    if (digits == null || !digits)
+      digits = 0;
+    
+    return numberFilter(input,digits).replace(',', ' ').replace('.', ',');
+  }
+}]);
+
+/*
  * Takes 1250 and turns it into 12.50€
  * (using the currency sign in the currency argument)
  * currency filter already exists in angularjs but did not satisfy me :)
  */
-buckuttAdminApp.filter('currency2', ['numberFilter', function(numberFilter) {
+buckuttAdminApp.filter('currency2', ['numericFilter', function(numericFilter) {
   return function(input, currency) {
     if (input == null || !input)
       return input;
     
-    input = numberFilter(parseFloat(input)/100,2)
-          .replace(',', ' ').replace('.', ',');
+    input = numericFilter(parseFloat(input)/100,2);
     return input+' '+currency;
   }
 }]);
@@ -67,7 +81,7 @@ buckuttAdminApp.filter('foreign', function() {
  */
 buckuttAdminApp.filter('translator', function() {
   return function(input,translateArray) {
-    if (input == null || !input || !translateArray)
+    if (input == null || (!input && typeof input != 'boolean') || !translateArray)
       return input;
     
     if(typeof translateArray == 'string'){
@@ -98,7 +112,7 @@ buckuttAdminApp.filter('translator', function() {
 buckuttAdminApp.filter('tableFilter', ['capitalizeFilter','currency2Filter', 'foreignFilter', 'translatorFilter', 'dateFilter',
   function(capitalizeFilter,currency2Filter,foreignFilter,translatorFilter,dateFilter) {
     return function(input, filterInfos) {
-      if (input == null || !input || !filterInfos)
+      if (input == null || (!input && typeof input != 'boolean') || !filterInfos)
         return input;
       
       var f = filterInfos.split('>>');

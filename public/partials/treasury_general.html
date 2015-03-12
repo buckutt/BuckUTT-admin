@@ -5,40 +5,48 @@
       </div>
       <div ng-if="date_start <= date_end && time_start <= time_end">
         <div class="col-lg-6">
-          <h4 class="sub-header">Reloads</h4>
+          <h4 class="sub-header">Reloads
+            <span style="float:right;margin-bottom:0px;">
+              <small>Total: </small><span class="label label-success label-as-badge">{{totals.reloads | currency2:'€'}}</span>
+            </span>
+          </h4>
           <table class="table table-striped">
             <thead>
               <tr>
                 <th>Point</th>
                 <th>ReloadType</th>
-                <th>Amount</th>
+                <th class="table-numeric">Amount</th>
               </tr>
             </thead>
             <tbody>
               <tr  ng-if="tables.reloads != 'empty'" ng-repeat="entry in tables.reloads">
                 <td>{{entry.PointName}}</td>
                 <td>{{entry.ReloadTypeName}}</td>
-                <td>{{entry.Amount | currency2:'€'}}</td>
+                <td class="table-numeric">{{entry.Amount | currency2:'€'}}</td>
               </tr>
             </tbody>
           </table>
           <div ng-if="tables.reloads == 'empty'" class="alert alert-info" role="alert">No data for this period</div>
         </div>
         <div class="col-lg-6">
-          <h4 class="sub-header">Purchases</h4>
+          <h4 class="sub-header">Purchases
+            <span style="float:right;margin-bottom:0px;">
+              <small>Total: </small><span class="label label-success label-as-badge">{{totals.purchases | currency2:'€'}}</span>
+            </span>
+          </h4>
           <table class="table table-striped">
             <thead>
               <tr>
                 <th>Fundation</th>
                 <th>Point</th>
-                <th>Amount</th>
+                <th class="table-numeric">Amount</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-if="tables.purchases != 'empty'" ng-repeat="entry in tables.purchases">
                 <td>{{entry.FundationName}}</td>
                 <td>{{entry.PointName}}</td>
-                <td>{{entry.Amount | currency2:'€'}}</td>
+                <td class="table-numeric">{{entry.Amount | currency2:'€'}}</td>
               </tr>
             </tbody>
           </table>
