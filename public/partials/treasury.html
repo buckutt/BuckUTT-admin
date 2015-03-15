@@ -18,8 +18,8 @@
     </span>
     
     <!-- Time select -->
-    <input type="time" class="form-control time-input" placeholder="To" ng-model="time_end" required>
-    <input type="time" class="form-control time-input" placeholder="From" ng-model="time_start" required>
+    <input type="time" class="form-control time-input" placeholder="To" ng-model="time_end" ng-blur="watcher(0,1)" required>
+    <input type="time" class="form-control time-input" placeholder="From" ng-model="time_start" ng-blur="watcher(0,1)" required>
     
     <!-- Date select -->
     <div class="row" style="width: 500px;">
@@ -27,7 +27,7 @@
           <p class="input-group">
             <span class="input-group-addon" id="sizing-addon1">From</span>
             <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
-            datepicker-popup="{{format}}" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
+            datepicker-popup="yyyy-MM-dd" ng-model="date_start" is-open="opened.start" ng-required="true" close-text="Close" />
             
             <span class="input-group-btn">
               <button type="button" class="btn btn-default" ng-click="open($event,'start')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -38,7 +38,7 @@
           <p class="input-group">
             <span class="input-group-addon" id="sizing-addon1">To</span>
             <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions"
-            datepicker-popup="{{format}}" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
+            datepicker-popup="yyyy-MM-dd" ng-model="date_end" is-open="opened.end" ng-required="true" close-text="Close" />
             
             <span class="input-group-btn">
               <button type="button" class="btn btn-default" ng-click="open($event,'end')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -47,9 +47,13 @@
       </div>
     </div>
     
-    <h3 ng-if="table.length > 0" style="float:right;margin-bottom:0px;">
+    <!-- Total of table -->
+    <h3 ng-if="recap && table.length > 0" style="float:right;margin-bottom:0px;">
       <small>Total: </small><span class="label label-success label-as-badge">{{totalAmount | currency2:'€'}}</span>
     </h3>
+    
+    <!-- Page num select -->
+    <div ng-if="$root.funId && !recap" ng-include="'partials/pagination.html'" style="float:right;margin-top:18px;"></div>
     
     <!-- Display Selected Date -->
     <h3>
@@ -63,5 +67,6 @@
       </span>
     </h3>
     
+    <div ng-if="error" class="alert alert-danger" role="alert">{{error.type}}<br />{{error.message}}</div>
     <div ng-include="include_url"></div>
   </div>

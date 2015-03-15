@@ -1,0 +1,43 @@
+{
+  "name" : "purchases",
+  "crud_info" : 
+  [
+  ],
+  "get_url" : "/purchases?isRemoved=False&order=date",
+  "dataStructure" : 
+  [
+    {
+      "name" : "PointId",
+      "display_name" : "Point",
+      "foreign" : "/points",
+      "filter" : "foreign>>name"
+    },
+    {
+      "name" : "ArticleId",
+      "display_name" : "Article",
+      "foreign" : "/articles",
+      "filter" : "foreign>>name"
+    },
+    {
+      "name" : "price",
+      "filter" : "currency>>\u20AC"
+    },
+    {
+      "name" : "BuyerId",
+      "display_name" : "Buyer",
+      "foreign" : "/users",
+      "filter" : "foreign>>firstname, lastname"
+    },
+    {
+      "name" : "SellerId",
+      "display_name" : "Seller",
+      "foreign" : "/users",
+      "filter" : "foreign>>firstname, lastname"
+    },
+    {
+      "name" : "date",
+      "form_type" : "datetime",
+      "filter" : "date>>dd/MM/yyyy HH:mm:ss"
+    }
+  ]
+}

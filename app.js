@@ -42,11 +42,13 @@ app.post('/login',
     
     if (!req.form.isValid) {
       r.error = {"type":"AUTH_ERROR","code":1,"message":req.form.errors};
+      res.send(r);
+      return;
     }
     else {
       var uid = 9180;
       rest.postJson('http://127.0.0.1:8081/api/services/login', { 'UserId': uid }).on('complete', function(re) {
-        if(!re.token){// user id not found
+        if(!re.token){ //user id not found
           r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
           res.send(r);
           return;
@@ -54,7 +56,7 @@ app.post('/login',
         
         var utoken = re.token;
         
-        // check rights using token here ?
+        //check rights using token here ?
         
         var options = {
             headers: {
@@ -66,7 +68,7 @@ app.post('/login',
         
         rest.get('http://127.0.0.1:8081/api/users?id='+uid, options).on('complete', function(re) {
           console.log(re);
-          if(!re.data){// no rights to read this info ^^
+          if(!re.data){ //no rights to read this info ^^
             r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
             res.send(r);
             return;

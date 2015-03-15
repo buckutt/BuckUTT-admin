@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/articles?embed=prices&type=product&isRemoved=False",
+  "get_url" : "/articles?embed=prices,SellingPlaces&type=product&isRemoved=False",
   "fun_location" : "Price",
   "dataStructure" : 
   [
@@ -16,7 +16,7 @@
     {
       "name" : "Prices",
       "multi_valued" : true,
-      "subFields" : 
+      "subFields" :
       [
         {
           "name" : "credit",
@@ -37,12 +37,29 @@
       ]
     },
     {
+      "name" : "SellingPlaces",
+      "display_name" : "Points",
+      "multi_valued" : true,
+      "subFields" :
+      [
+        {
+          "name" : "ArticlesPoints",
+          "display_name" : "Point Name"
+        },
+        {
+          "name" : "priority"
+        }
+      ]
+    },
+    {
       "name" : "stock",
+      "form_type" : "number",
       "filter" : "translator>>-1->Infinit"
     },
     {
       "name" : "isSingle",
       "display_name" : "Unique",
+      "form_type" : "bool",
       "filter" : "translator>>1->Yes, 0->No"
     }
   ]

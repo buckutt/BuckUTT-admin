@@ -1,9 +1,9 @@
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     
-    <h2 class="sub-header">Foyer - {{matrix.name | capitalize}} - {{entryId == 0 ? 'Create' : 'Update'}}</h2>
+    <h2 class="sub-header">Foyer - {{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
     
     <p>
-      <a href="/app/#/fundation/{{funId}}/{{page}}"  class="btn btn-warning">Cancel & go back</a>
+      <a href="{{$root.getUrl()}}"  class="btn btn-warning">Cancel & go back</a>
       <button type="button" class="btn btn-primary pull-right">Submit</button>
     </p>
     
@@ -13,37 +13,65 @@
         <!-- mono-valued -->
         <div ng-repeat="field in matrix.dataStructure" ng-if="!field.multi_valued" ng-attr-class="{{!field.multi_valued && 'row' || ''}}">
 
-          <div ng-if="field.name != 'id' || entryId != 0" class="form-group col-lg-6" >
-                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2">{{field.display_name ? field.display_name : (field.name | capitalize)}}</label>
-                <div class="col-lg-10">
-                  <input type="text" class="form-control"
-                         ng-disabled="{{field.name == 'id'}}"
-                         ng-attr-id="{{matrix.name}}-{{field.name}}"
-                         ng-attr-value="{{entryId == 0 && '' || entry[field.name]}}">
+          <div ng-if="field.name != 'id' || $root.entryId" class="form-group col-lg-6" >
+                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2" style="margin-top:7px;">{{field.display_name ? field.display_name : (field.name | capitalize)}}</label>
+                <div ng-switch="field.form_type" class="col-lg-10">
+                  <!-- switch on input types -->
+                  <div ng-switch-when="bool">
+                    <label class="radio-inline">
+                      <input type="radio" required
+                        ng-attr-name="{{matrix.name}}-{{field.name}}"
+                        value="yes"/>Yes</label>
+                    <label class="radio-inline">
+                      <input type="radio" required
+                        ng-attr-name="{{matrix.name}}-{{field.name}}"
+                        value="no"/>No</label>
+                  </div>
+                  <div ng-switch-when="datetime" class="row" style="padding-left:15px;">
+                    <div class="input-group col-md-8" style="float:left;">
+                      <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions" required
+                      datepicker-popup="yyyy-MM-dd" ng-model="entry[field.name]" is-open="opened[field.name]" ng-required="true" close-text="Close" />
+                      
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open($event,field.name)"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                      
+                    </div>
+                    <div class="col-md-4">
+                      <input type="time" class="form-control" ng-model="entry[field.name+'_time']" required>
+                    </div>
+                  </div>
+                  <input type="number" class="form-control"
+                      ng-switch-when="number"
+                      required
+                      ng-disabled="{{field.name == 'id'}}"
+                      ng-attr-name="{{matrix.name}}-{{field.name}}"
+                      ng-model="entry[field.name]">
+                  <div ng-switch-default>
+                    <select ng-if="field.foreign" class="form-control" ng-attr-name="{{matrix.name}}-{{field.name}}">
+                      <option>Sell</option>
+                      <option>Reload</option>
+                      <option>Admin</option>
+                    </select>
+                    <input ng-if="!field.foreign" type="text" class="form-control"
+                        required
+                        ng-disabled="{{field.name == 'id'}}"
+                        ng-attr-name="{{matrix.name}}-{{field.name}}"
+                        ng-model="entry[field.name]">
+                  </div>
                 </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-lg-6">
-          <label for="article-tab" class="col-lg-2">Right</label>
-            <div class="col-lg-10">
-              <select id="article-tab" class="form-control" >
-                <option>Sell</option>
-                <option>Reload</option>
-                <option>Admin</option>
-              </select>
-            </div>
           </div>
         </div>
         
         <!-- multi-valued -->
         <div ng-repeat="field in matrix.dataStructure" ng-if="field.multi_valued">
-          <legend>{{field.name | capitalize}}</legend>
+          <br />
+          <legend>{{field.display_name ? field.display_name : (field.name | capitalize)}}</legend>
           <div class="table-responsive">
             <table class="table table-striped" ng-if="!angular.isArray(field.subFields)">
               <thead>
                 <tr>
-                  <th>{{field.name | capitalize}}</th>
+                  <th>{{field.display_name ? field.display_name : (field.name | capitalize)}}</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -61,14 +89,14 @@
               <thead>
                 <tr>
                   <th ng-if="angular.isArray(field.subFields)" 
-                      ng-repeat="subField in field.subFields">{{subField.name | capitalize}}</th>
+                      ng-repeat="subField in field.subFields">{{subField.display_name ? subField.display_name : (subField.name | capitalize)}}</th>
                   
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr ng-repeat="line in entry[field.name]">
-                  <td ng-repeat="subField in field.subFields">{{line[subField.name]}}</td>
+                  <td ng-repeat="subField in field.subFields">{{line[subField.name]|tableFilter:subField.filter}}</td>
                   <td>
                     <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
                   </td>

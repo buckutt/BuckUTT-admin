@@ -3,7 +3,7 @@
   "crud_info" : 
   [
   ],
-  "get_url" : "/users?isRemoved=False",
+  "get_url" : "/users?embed=groups&isRemoved=False",
   "dataStructure" : 
   [
     {
@@ -24,6 +24,17 @@
     {
       "name" : "credit",
       "filter" : "currency:\u20AC"
+    },
+    {
+      "name" : "Groups",
+      "multi_valued" : true,
+      "subFields" :
+      [
+        {
+          "name" : "name",
+          "display_name" : "Group Name"
+        }
+      ]
     }
   ]
 }

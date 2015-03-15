@@ -14,32 +14,10 @@
     
     <p>
       <!-- Page num select -->
-      <div class="btn-group" style="float:right" role="group">
-        <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_prev()">&laquo;</button>
-        <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_goto(1)">1</button>
-
-        <div ng-if="$root.page.max != 1 && (page_dropDown().length > 3 || $root.page.num != 2)" class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            {{$root.page.num}}
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li ng-switch="$root.funId" ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}">
-              <a ng-switch-when="undefined" href="/#/general/{{$root.pageName}}/{{num}}">{{num}}</a>
-              <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.pageName}}/{{num}}">{{num}}</a>
-            </li>
-          </ul>
-        </div>
-        <button type="button" class="btn btn-default" ng-if="page_dropDown().length <= 3 && $root.page.num == 2">{{$root.page.num}}</button>
-        <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_goto($root.page.max)">{{$root.page.max}}</button>
-        <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_next()">&raquo;</button>
-      </div>
+      <div ng-include="'partials/pagination.html'" role="group" class="btn-group" style="float:right"></div>
       
       <button type="button" class="btn btn-warning">Search & Sort</button>
-      <span ng-switch="$root.funId">
-        <a ng-switch-when="undefined" href="/#/general/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
-        <a ng-switch-default href="/#/fundation/{{funId}}/{{$root.pageName}}/create" class="btn btn-primary btn-create">Create</a>
-      </span>
+      <span><a href="{{$root.getUrl()}}/create" class="btn btn-primary btn-create">Create</a></span>
     </p>
     
     <div ng-if="error" class="alert alert-danger" role="alert">{{error.type}}<br />{{error.message}}</div>
@@ -48,19 +26,19 @@
       <table class="table table-striped">
         <thead>
           <!-- mono-line when no multi-fields -->
-          <tr ng-if="mv_selected == 0 || matrix.dataStructure[mv_selected].dataLength == 0">
-            <th ng-repeat="col in matrix.dataStructure">{{col.display_name ? col.display_name : col.name}}</th>
+          <tr ng-if="mv_selected == 0 || matrix.dataStructure[mv_selected].dataLength <= 1">
+            <th ng-repeat="col in matrix.dataStructure">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
             <th>Action</th>
           </tr>
           
           <!-- two lines when multi-fields -->
-          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
+          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 1">
             <th ng-repeat="col in matrix.dataStructure" 
                 ng-attr-rowspan="{{$index == mv_selected && 'none' || '2'}}"
                 ng-attr-colspan="{{$index == mv_selected && col.dataLength || 'none'}}">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
             <th ng-attr-rowspan="{{matrix.dataStructure[mv_selected].dataLength > 0 && '2' || 'none'}}">Action</th>
           </tr>
-          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 0">
+          <tr ng-if="matrix.dataStructure[mv_selected].dataLength > 1">
             <th ng-repeat="col in matrix.dataStructure[mv_selected].subFields">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
           </tr>
         </thead>
@@ -90,7 +68,7 @@
             <td ng-if="!$first && !matrix.dataStructure[mv_selected].hasOwnProperty('subFields')">{{line|tableFilter:field.filter}}</td>
             
             <td ng-if="$first" ng-attr-rowspan="{{entry.mv_lengths[mv_selected]}}">
-              <a ng-href="/#/fundation/{{funId}}/{{$root.pageName}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a ng-href="{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>
@@ -100,7 +78,7 @@
             <td ng-repeat="field in matrix.dataStructure">{{entry[field.name]|tableFilter:field.filter}}</td>
             
             <td>
-              <a ng-href="/#/general/{{$root.pageName}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a ng-href="{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>

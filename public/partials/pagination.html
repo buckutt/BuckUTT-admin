@@ -1,0 +1,19 @@
+<div class="btn-group" role="group">
+  <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_prev()">&laquo;</button>
+  <button type="button" class="btn btn-default" ng-if="$root.page.num != 1" ng-click="page_goto(1)">1</button>
+
+  <div ng-if="$root.page.max != 1 && (page_dropDown().length > 3 || $root.page.num != 2)" class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      {{$root.page.num}}
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+      <li ng-repeat="num in page_dropDown()" ng-if="num != 1 && num != $root.page.max" ng-class="{'active':($root.page.num == num)}">
+        <a href="" ng-click="page_goto(num)">{{num}}</a>
+      </li>
+    </ul>
+  </div>
+  <button type="button" class="btn btn-default" ng-if="page_dropDown().length <= 3 && $root.page.num == 2">{{$root.page.num}}</button>
+  <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_goto($root.page.max)">{{$root.page.max}}</button>
+  <button type="button" class="btn btn-default" ng-if="$root.page.num != $root.page.max" ng-click="page_next()">&raquo;</button>
+</div>

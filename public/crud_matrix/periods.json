@@ -14,10 +14,12 @@
     },
     {
       "name" : "startDate",
+      "form_type" : "datetime",
       "filter" : "date>>dd/MM/yyyy HH:mm:ss"
     },
     {
       "name" : "endDate",
+      "form_type" : "datetime",
       "filter" : "date>>dd/MM/yyyy HH:mm:ss"
     }
   ]

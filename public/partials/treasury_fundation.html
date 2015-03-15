@@ -4,7 +4,7 @@
       </div>
       <!-- {"PurchasesCount":3,"PurchasesSum":150,"ArticlePrice":50,"ArticleName":"Balisto Jaune","PointName":"Foyer"} -->
       <div ng-if="date_start <= date_end && time_start <= time_end">
-        <table class="table table-striped">
+        <table ng-if="recap" class="table table-striped">
           <thead>
             <tr>
               <th>Point Name</th>
@@ -23,6 +23,21 @@
               <td class="table-numeric" ng-if="entry.ArticlePrice > 0">{{entry.PurchasesSum | currency2:'€'}}</td>
               <td class="table-numeric" ng-if="entry.ArticlePrice == 0"><span class="label label-primary label-as-badge">Promotion</span></td>
               <td class="table-numeric" ng-if="entry.ArticlePrice == 0"><span class="label label-primary label-as-badge">Promotion</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table ng-if="!recap" class="table table-striped">
+          <thead>
+            <tr>
+              <th ng-repeat="col in matrix.dataStructure">{{col.display_name ? col.display_name : (col.name | capitalize)}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr  ng-if="table != 'empty'" ng-repeat="entry in table">
+              <td ng-repeat="field in matrix.dataStructure">
+                <span ng-if="entry[field.name] != 0">{{entry[field.name]|tableFilter:field.filter}}</span>
+                <span ng-if="entry[field.name] == 0 &&  split_promo && field.name == 'price'" class="label label-primary label-as-badge">Promotion</span>
+              </td>
             </tr>
           </tbody>
         </table>
