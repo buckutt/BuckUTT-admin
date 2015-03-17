@@ -1,0 +1,20 @@
+{
+  "public_server" : null,
+  "root_server" : {
+    
+    "api_access_profiles": ["root"],
+    "serving_static": true,
+    
+    "port": 80
+  },
+  "backend": {
+      "host": "127.0.0.1",
+      "port": "8081",
+      "http_prefix": "/api",
+      "https": false
+  },
+  "cookie_secret": "thisIsASecret",
+  "static_dir_path": "public",
+  "page_size": 50,
+  "currency": '€'
+}

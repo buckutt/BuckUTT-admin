@@ -43,11 +43,12 @@
       "subFields" :
       [
         {
-          "name" : "ArticlesPoints",
+          "name" : "name",
           "display_name" : "Point Name"
         },
         {
-          "name" : "priority"
+          "name" : "ArticlesPoints.priority",
+          "display_name" : "priority"
         }
       ]
     },

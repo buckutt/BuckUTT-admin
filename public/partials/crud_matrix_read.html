@@ -74,7 +74,8 @@
           </tr>
           
           <!-- no multi-valued lines (previous tr loop will loop 0 times), for each item just print 1 line -->
-          <tr ng-if="mv_selected == 0">
+          <!-- OR juste this one is not multi-valued and has 0 subfields so previous tr loop will also loop 0 times -->
+          <tr ng-if="mv_selected == 0 || entry[matrix.dataStructure[mv_selected].name].length == 0">
             <td ng-repeat="field in matrix.dataStructure">{{entry[field.name]|tableFilter:field.filter}}</td>
             
             <td>

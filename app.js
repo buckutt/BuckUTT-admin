@@ -12,109 +12,50 @@ var https = require('https');
 var fs = require('fs');
 var rest = require('restler');
 var md5 = require('MD5');
+var config = require('./app/configManager');
 
 var api_routes = require('./app/routes/backend');
+var login_routes = require('./app/routes/login');
 
-var app = express();
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(session({
-  secret: 'ssshhhhh', 
-  resave: false, 
-  saveUninitialized: false
-}));
-
-app.use('/api*', api_routes);
-
-app.post('/login', 
-  form(
-    field("username").trim().required().is(/^\w[\w_]{2,8}\d?$/i),
-    field("password").trim().required().is(/^.{2,16}$/)
-  ),
-  function(req, res){
-    var sess=req.session;
-    var r = {};
-    
-    if (!req.form.isValid) {
-      r.error = {"type":"AUTH_ERROR","code":1,"message":req.form.errors};
-      res.send(r);
-      return;
-    }
-    else {
-      var uid = 9180;
-      rest.postJson('http://127.0.0.1:8081/api/services/login', { 'UserId': uid }).on('complete', function(re) {
-        if(!re.token){ //user id not found
-          r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
-          res.send(r);
-          return;
-        }
-        
-        var utoken = re.token;
-        
-        //check rights using token here ?
-        
-        var options = {
-            headers: {
-                'Accept': '*/*',
-                'User-Agent': 'Restling for node.js',
-                'Authorization': 'Bearer ' + utoken
-            }
-        };
-        
-        rest.get('http://127.0.0.1:8081/api/users?id='+uid, options).on('complete', function(re) {
-          console.log(re);
-          if(!re.data){ //no rights to read this info ^^
-            r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
-            res.send(r);
-            return;
-          }
-          sess.user = {};
-          sess.user.id = re.data.id;
-          sess.user.firstname = re.data.firstname;
-          sess.user.lastname = re.data.lastname;
-          sess.user.nickname = re.data.nickname;
-          sess.user.mail = re.data.mail;
-          sess.user.login = req.body.username;
-          sess.user.token = utoken;
-          r.user = sess.user;
-          
-          res.send(r);
-        });
-      });
-    }
-  }
-);
-
-app.get('/user', function(req, res){
-  var sess=req.session;
-  var r = {};
+var create_server = function(serv_name) {
+  var serv = config.get(serv_name);
   
-  if (sess.user)
-    r.user = sess.user;
-  else
-    r.error = {"type":"AUTH_ERROR","code":2,"message":"No user logged in"};
+  if (!serv)
+    return;
   
-  res.send(r);
-});
+  var app = express();
 
-app.post('/logout', function(req, res){
-  var sess=req.session;
-  var r = {};
+  app.use(logger('dev'));
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(cookieParser());
+   
+  if (serv.serving_static)
+    app.use(express.static(path.join(__dirname, config.get('static_dir_path'))));
   
-  req.session.destroy(function(err){
-    if(err){
-      console.log(err);
-      r.error = {"type":"AUTH_ERROR","code":666,"message":"Could not destroy session"};
-    }
-    res.send(r);
+  app.use(session({
+    secret: config.get('cookie_secret'), 
+    resave: false, 
+    saveUninitialized: false
+  }));
+  
+  //middleware adding server info on each request
+  app.use(function(req, res, next) {
+    req.buckutt_server = serv;
+    req.buckutt_server.name = serv_name;
+    req.buckutt_server.backend = config.get('backend');
+    next();
   });
-});
+  
+  app.use('/api*', api_routes);
+  app.use('/', login_routes);
+  
+  http.createServer(app).listen(serv.port);
+};
 
-console.log('env: '+app.get('env'));
-http.createServer(app).listen(80);
+//start public_server
+create_server('public_server');
 
+//start root_server
+create_server('root_server');

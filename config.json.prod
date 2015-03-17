@@ -1,0 +1,43 @@
+{
+  "public_server" : {
+    
+    "api_access_profiles": ["treasury","fundation"],
+    "serving_static": true,
+    
+    "port": 443,
+    "https_options" : {
+      "key": 'cert/test_server.key',
+      "cert": 'cert/test_server.crt',
+      "ca": 'cert/testca.crt',
+      "requestCert": true,
+      "rejectUnauthorized": true
+    }
+  },
+  "root_server" : {
+    
+    "api_access_profiles": ["root"],
+    "serving_static": false,
+    
+    "proxy_port": 3000,
+    "proxy_https": yes,
+    
+    "port": 3000,
+    "https_options" : {
+      "key": 'cert/test_server.key',
+      "cert": 'cert/test_server.crt',
+      "ca": 'cert/testca.crt',
+      "requestCert": true,
+      "rejectUnauthorized": true
+    }
+  },
+  "backend": {
+      "host": "192.168.0.1",
+      "port": "8081",
+      "http_prefix": "/api",
+      "https": false
+  },
+  "cookie_secret": "thisIsASecret",
+  "static_dir_path": "public",
+  "page_size": 50,
+  "currency": '€'
+}
