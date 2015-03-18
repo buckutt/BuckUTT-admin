@@ -4,13 +4,12 @@ var session = require('express-session');
 var form = require("express-form");
 var field = form.field;
 var rest = require('restler');
-var md5 = require('MD5');
 var config = require('../configManager');
 
 router.post('/login', 
   form(
     field("username").trim().required().is(/^\w[\w_]{2,8}\d?$/i),
-    field("password").trim().required().is(/^.{2,16}$/)
+    field("password").trim().required().is(/^.{2,24}$/)
   ),
   function(req, res){
     var sess=req.session;
@@ -22,51 +21,26 @@ router.post('/login',
       return;
     }
     else {
-      var uid = 9180;
+      var credentials = {
+        'MeanOfLoginId': config.get('MeanOfLoginId'),
+        'data': req.body.username,
+        'password': req.body.password
+      };
       
-      var base_url = 'http'+(req.buckutt_server.backend.https ? 's' : '')+'://';
-      base_url    += req.buckutt_server.backend.host+':';
-      base_url    += req.buckutt_server.backend.port;
-      base_url    += req.buckutt_server.backend.http_prefix;
-
-      rest.postJson(base_url+'/services/login', { 'UserId': uid }).on('complete', function(re) {
+      rest.postJson(router.backend.base_url+router.backend.http_prefix+'/services/login', credentials).on('complete', function(re) {
+        console.log(re);
         if(!re.token){ //user id not found
           r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
           res.send(r);
           return;
         }
+
+        sess.user = re.user;
+        sess.user.login = req.body.username;
+        sess.user.token = re.token;
+        r.user = sess.user;
         
-        var utoken = re.token;
-        
-        //check rights using token here ?
-        
-        var options = {
-            headers: {
-                'Accept': '*/*',
-                'User-Agent': 'Restling for node.js',
-                'Authorization': 'Bearer ' + utoken
-            }
-        };
-        
-        rest.get(base_url+'/users?id='+uid, options).on('complete', function(re) {
-          console.log(re);
-          if(!re.data){ //no rights to read this info ^^
-            r.error = {"type":"AUTH_ERROR","code":1,"message":"Wrong username or password"};
-            res.send(r);
-            return;
-          }
-          sess.user = {};
-          sess.user.id = re.data.id;
-          sess.user.firstname = re.data.firstname;
-          sess.user.lastname = re.data.lastname;
-          sess.user.nickname = re.data.nickname;
-          sess.user.mail = re.data.mail;
-          sess.user.login = req.body.username;
-          sess.user.token = utoken;
-          r.user = sess.user;
-          
-          res.send(r);
-        });
+        res.send(r);
       });
     }
   }

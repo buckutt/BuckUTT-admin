@@ -18,6 +18,7 @@ router.get('/', function(req, res) {
   console.log('VERIFY '+req.buckutt_server.name);
   console.log(req.buckutt_server.api_access_profiles);
   //verify rights here...
+  // I'm sorry Dave, I'm afraid I can't give you access here
   
   var options = {
       headers: {
@@ -26,13 +27,8 @@ router.get('/', function(req, res) {
           'Authorization': 'Bearer ' + sess.user.token
       }
   };
-  var url = 'http'+(req.buckutt_server.backend.https ? 's' : '')+'://';
-  url    += req.buckutt_server.backend.host+':';
-  url    += req.buckutt_server.backend.port;
-  url    += req.buckutt_server.backend.http_prefix;
-  url    += req.originalUrl;
   
-  rest.get(url, options).on('complete', function(result) {
+  rest.get(req.buckutt_server.backend.base_url+req.originalUrl, options).on('complete', function(result) {
     if (result instanceof Error) {
       console.log("Got error: " + result.message);
       var r = {};
