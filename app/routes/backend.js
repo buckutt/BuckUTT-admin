@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var http = require('http');
-var rest = require('restler');
+var httpProxy = require('http-proxy');
 var config = require('../configManager');
+var proxy = httpProxy.createProxyServer();
 
 router.get('/', function(req, res) {
   console.log('API '+req.originalUrl)
@@ -20,23 +21,10 @@ router.get('/', function(req, res) {
   //verify rights here...
   // I'm sorry Dave, I'm afraid I can't give you access here
   
-  var options = {
-      headers: {
-          'Accept': '*/*',
-          'User-Agent': 'Restling for node.js',
-          'Authorization': 'Bearer ' + sess.user.token
-      }
-  };
-  
-  rest.get(req.buckutt_server.backend.base_url+req.originalUrl, options).on('complete', function(result) {
-    if (result instanceof Error) {
-      console.log("Got error: " + result.message);
-      var r = {};
-      r.error = {"type":"API_ERROR","code":1,"message":"Could not connect to api"};
-      res.send(r);
-    } else {
-      res.send(result);
-    }
+  req.headers['Accept'] = '*/*';
+  req.headers['Authorization'] = 'Bearer ' + sess.user.token;
+  proxy.web(req, res, {
+    target: req.buckutt_server.backend.base_url+req.originalUrl
   });
 });
 
