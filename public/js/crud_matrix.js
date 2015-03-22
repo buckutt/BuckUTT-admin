@@ -24,6 +24,7 @@ var create_crud_matrix = function(pageName, $scope, $http, callback) {
           if (data.dataStructure[j].name == col.name && angular.isArray(col.subFields)) { //here are the sub-fields
             for (var k in data.dataStructure[j].subFields) {
               col.subStructure.push(data.dataStructure[j].subFields[k]);
+              col.subStructure[col.subStructure.length-1].parent = data.dataStructure[j].name;
             }
           }
           else{

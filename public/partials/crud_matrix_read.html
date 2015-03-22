@@ -53,8 +53,7 @@
                   
                   <!-- mono-valued or multi-valued selected -->
                   <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
-                    {{field.name}}
-                    {{entry.hasOwnProperty(field.name) ? (angular.isArray(entry[field.name]) ? (entry[field.name][0]|tableFilter:field.filter) : entry[field.name]|tableFilter:field.filter) : line[field.name]|tableFilter:field.filter}}
+                    {{entry.hasOwnProperty(field.name) && !field.hasOwnProperty('parent') ? (angular.isArray(entry[field.name]) ? (entry[field.name][0]|tableFilter:field.filter) : entry[field.name]|tableFilter:field.filter) : line[field.name]|tableFilter:field.filter}}
                   </span>
                   
                   <!-- multi-valued not selected -->
@@ -77,10 +76,10 @@
           <!-- no multi-valued lines (previous tr loop will loop 0 times), for each item just print 1 line -->
           <!-- OR just this one is not multi-valued and has 0 subfields so previous tr loop will also loop 0 times -->
           <tr ng-if="mv_selected == 0 || entry[matrix.dataStructure[mv_selected].name].length == 0">
-            <td ng-repeat="field in matrix.dataStructure">
+            <td ng-repeat="field in matrix.dataStructure[mv_selected].subStructure">
               <!-- mono-valued or multi-valued selected -->
               <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
-                {{entry[field.name]|tableFilter:field.filter}}
+                {{entry.hasOwnProperty(field.name) && !field.hasOwnProperty('parent') ? (entry[field.name]|tableFilter:field.filter) : '-'}}
               </span>
               
               <!-- multi-valued not selected -->
