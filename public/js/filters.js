@@ -144,26 +144,29 @@ buckuttAdminApp.filter('tableFilter', ['capitalizeFilter','currency2Filter', 'fo
  * Must be defined after tableFilter because it uses it
  */
 buckuttAdminApp.filter('mvLabel', ['tableFilterFilter', function(tableFilterFilter) {
-  return function(input,filters) {
+  return function(input,dataStructure) {
     if (input == null || !input)
       return input;
     
-    if(typeof input != 'string'){
-      var str = '', f = '', i = 0;
+    if (typeof input != 'string'){
+      var str = '', f = '', value = '', values = [];
 
-      for(var key in input){
-        if(key.substring(0,1) == '$')
-          continue; // skip private attributes
-        
-        if(filters[i])
-          f = filters[i++].filter;
-        
-        str += tableFilterFilter(input[key], f) + ' | ';
+      for (var i in dataStructure){
+        if (dataStructure[i].name == 'name' || dataStructure[i].mv_display) {
+          if(dataStructure[i].filter)
+            f = dataStructure[i].filter;
+          
+          // dataStructure[i].name can be "name" or "Something.name"
+          /*values = dataStructure[i].name.split('.');
+          value = values.length == 1 ? input[dataStructure[i].name] : input[values[0]][values[1]];
+          str += tableFilterFilter(value, f) + ' | ';*/
+          str += tableFilterFilter(input[dataStructure[i].name], f) + ' | ';
+        }
       }
       return str.substring(0,str.length-3);
     }
     else
-      return tableFilterFilter(input, filters);
+      return tableFilterFilter(input, dataStructure);
   }
 }]);
 

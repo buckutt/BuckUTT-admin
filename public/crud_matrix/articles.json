@@ -20,17 +20,20 @@
       [
         {
           "name" : "credit",
+          "mv_display" : true,
           "filter" : "currency>>\u20AC"
         },
         {
           "name" : "PeriodId",
           "display_name" : "Period",
+          "mv_display" : true,
           "foreign" : "/periods",
           "filter" : "foreign>>name"
         },
         {
           "name" : "GroupId",
           "display_name" : "Group",
+          "mv_display" : true,
           "foreign" : "/groups",
           "filter" : "foreign>>name"
         }
@@ -48,7 +51,8 @@
         },
         {
           "name" : "ArticlesPoints.priority",
-          "display_name" : "priority"
+          "display_name" : "Priority",
+          "mv_display" : true
         }
       ]
     },

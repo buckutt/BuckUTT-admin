@@ -10,9 +10,9 @@ var create_crud_matrix = function(pageName, $scope, $http, callback) {
     //set dataLength for counting sub fields on multi-valued fields
     //also create a sub-dataStructure in mv_cols with the sub-fields instead of parent field (eg : for article, price/period/group instead of prices)
     var mv_cols = [], mv_count = 0;//mv = multi-valued
-    for(var i in data.dataStructure){
+    for (var i in data.dataStructure) {
       var col = data.dataStructure[i];
-      if(col.multi_valued){
+      if (col.multi_valued) {
         col['dataLength'] = angular.isArray(col.subFields) ? col.subFields.length : 0;
         mv_cols.push({"pos" : i, "name" : col.name});
         ++mv_count;
@@ -20,9 +20,9 @@ var create_crud_matrix = function(pageName, $scope, $http, callback) {
         //creating the sub structure
         col.subStructure = [];
         
-        for(var j in data.dataStructure){
-          if(data.dataStructure[j].name == col.name && angular.isArray(col.subFields)){ //here are the sub-fields
-            for(var k in data.dataStructure[j].subFields){
+        for (var j in data.dataStructure) {
+          if (data.dataStructure[j].name == col.name && angular.isArray(col.subFields)) { //here are the sub-fields
+            for (var k in data.dataStructure[j].subFields) {
               col.subStructure.push(data.dataStructure[j].subFields[k]);
             }
           }
@@ -54,16 +54,16 @@ var foreign_field_replace = function($http, colName, dataStructure, data) {
   var uniq_list = [];
 
   //make a uniq list of ids
-  for(var e in data){
-    if(colName == dataStructure.name) { //not in a sub-field
+  for (var e in data) {
+    if (colName == dataStructure.name) { //not in a sub-field
       var value = data[e][colName];
-        if(uniq_list.indexOf(value) == -1)
+        if (uniq_list.indexOf(value) == -1)
           uniq_list.push(value);
     }
     else { //replace have to be done in a sub-field
-      for(var se in data[e][colName]){
+      for (var se in data[e][colName]) {
         var value = data[e][colName][se][dataStructure.name];
-        if(uniq_list.indexOf(value) == -1)
+        if (uniq_list.indexOf(value) == -1)
           uniq_list.push(value);
       }
     }
@@ -79,8 +79,8 @@ var foreign_field_replace = function($http, colName, dataStructure, data) {
     var foreign_assoc = {};
     
      //check if result is array of objects
-    if(angular.isArray(foreign_data.data)) {
-      for(var f in foreign_data.data)
+    if (angular.isArray(foreign_data.data)) {
+      for (var f in foreign_data.data)
         foreign_assoc[foreign_data.data[f].id.toString()] = foreign_data.data[f];
     }
     else { //case if we get just one result
@@ -88,14 +88,14 @@ var foreign_field_replace = function($http, colName, dataStructure, data) {
     }
     
      //go through data and make replacement
-    for(var e in data){
-      if(colName == dataStructure.name) { //not in a sub-field
+    for (var e in data) {
+      if (colName == dataStructure.name) { //not in a sub-field
         var old_value = data[e][colName];
         if (old_value)
           data[e][colName] = foreign_assoc[old_value.toString()];
       }
       else { //replace have to be done in a sub-field
-        for(var se in data[e][colName]){
+        for (var se in data[e][colName]) {
           var old_value = data[e][colName][se][subFieldsName];
           if (old_value)
             data[e][colName][se][subFieldsName] = foreign_assoc[old_value.toString()];
@@ -106,14 +106,37 @@ var foreign_field_replace = function($http, colName, dataStructure, data) {
   });
 };
 
+var sub_field_replace = function(colName, dataStructure, data) {
+  if (colName == dataStructure.name) { //not in a sub-field
+    var values = colName.split('.');
+    for (var e in data) {
+        if (data[e][values[0]])
+          data[e][values[1]] = data[e][values[0]][values[1]];
+    }
+    dataStructure[colName] = values[1];
+  }
+  else { //replace have to be done in a sub-field
+    var values = dataStructure.subFields[colName].name.split('.');
+    for (var e in data) {
+      var field = data[e][dataStructure.name];
+      for (var se in field) {
+        field[se][values[1]] = field[se][values[0]] ? field[se][values[0]][values[1]] : null;
+      }
+    }
+    dataStructure.subFields[colName].name = values[1];
+  }
+};
+
 /*
  * To be called after you got data back from API
- * Basically this function just populates mv_lengths for multi-valued fields
- * and calls foreign_field_replace() with the rights arguments
+ * This function does following things:
+ * - Populates mv_lengths for multi-valued fields
+ * - Calls sub_field_replace() for cols with "." in name like "ArticlesPoints.priority"
+ * - Calls foreign_field_replace() with the rights arguments
  */
 var process_crud_matrix_data = function(res, $scope, $http, callback) {
   
-  if (res.error || !res.data){
+  if (res.error || !res.data) {
     if (res.error)
       $scope.error = res.error;
     callback();
@@ -125,28 +148,41 @@ var process_crud_matrix_data = function(res, $scope, $http, callback) {
     res.data = [res.data];
   
   //set dataLength for counting number of values on multi-valued fields
-  for(var i in res.data){
+  for (var i in res.data) {
     res.data[i].mv_lengths = {};
-    for(var j in $scope.mv_cols){
+    for (var j in $scope.mv_cols) {
       res.data[i].mv_lengths[$scope.mv_cols[j].pos] = res.data[i][$scope.mv_cols[j].name].length;
     }
   }
   
+  //copy subField in field and
   //find columns where foreign link is defined
-  for(var i in $scope.matrix.dataStructure){
+  for (var i in $scope.matrix.dataStructure) {
     var col = $scope.matrix.dataStructure[i];
-    if(col.multi_valued){
+    if (col.multi_valued) {
       //go through subfields
-      for(var sf in col.subFields) {
-        if(col.subFields[sf].foreign){
+      for (var sf in col.subFields) {
+        if (col.subFields[sf].name.indexOf('.') != -1)
+          sub_field_replace(sf, col, res.data);
+        
+        if (col.subFields[sf].foreign)
           foreign_field_replace($http, col.name, col.subFields[sf], res.data);
-        }
       }
     }
     else { //mono valued
-      if(col.foreign){
-        foreign_field_replace($http, col.name, col, res.data);
+      if (col.name.indexOf('.') != -1) {
+        var values = col.name.split('.');
+        for (var e in res.data) {
+          if (res.data[e][values[0]])
+            res.data[e][values[1]] = res.data[e][values[0]][values[1]];
+        }
       }
+      
+      if (col.name.indexOf('.') != -1)
+        sub_field_replace(col.name, col, res.data);
+      
+      if (col.foreign)
+        foreign_field_replace($http, col.name, col, res.data);
     }
   }
   
@@ -192,7 +228,7 @@ var create_pagination = function($rootScope, $scope, $http, $location, base_req,
         start = 1;
       if (end > $rootScope.page.max)
         end = $rootScope.page.max;
-      for(var i=start; i <= end; ++i)
+      for (var i=start; i <= end; ++i)
         r.push(i);
       return r;
     };
