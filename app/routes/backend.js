@@ -19,10 +19,10 @@ router.get('/', function(req, res) {
   console.log('VERIFY '+req.buckutt_server.name);
   console.log(req.buckutt_server.api_access_profiles);
   //verify rights here...
-  // I'm sorry Dave, I'm afraid I can't give you access here
   
   req.headers['Accept'] = '*/*';
   req.headers['Authorization'] = 'Bearer ' + sess.user.token;
+  
   proxy.web(req, res, {
     target: req.buckutt_server.backend.base_url+req.originalUrl
   });

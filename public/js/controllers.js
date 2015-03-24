@@ -112,6 +112,11 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
                 res.data[0][$scope.matrix.dataStructure[i].name+'_time'] = new Date(res.data[0][$scope.matrix.dataStructure[i].name]);
             
             $scope.entry = res.data ? res.data[0] : 'empty';
+            
+            $scope.foreigns = {};
+            for(var i=0 in $scope.matrix.dataStructure)
+              if($scope.matrix.dataStructure[i].foreign)
+                make_drop_down($scope, $http, $scope.matrix.dataStructure[i]);
           });
         });
       }

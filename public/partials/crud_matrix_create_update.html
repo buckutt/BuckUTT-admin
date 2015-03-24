@@ -1,6 +1,10 @@
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     
-    <h2 class="sub-header">Foyer - {{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
+    <!-- Page name -->
+    <span ng-switch="$root.funId">
+      <h2 ng-switch-when="undefined" class="sub-header">{{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
+      <h2 ng-switch-default class="sub-header">{{$root.funList[funId].name}} - {{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
+    </span>
     
     <p>
       <a href="{{$root.getUrl()}}"  class="btn btn-warning">Cancel & go back</a>
@@ -9,7 +13,6 @@
     
     <div class="data-main-content">
       <form class="well form-horizontal">
-        <legend>Basic values</legend>
         <!-- mono-valued -->
         <div ng-repeat="field in matrix.dataStructure" ng-if="!field.multi_valued" ng-attr-class="{{!field.multi_valued && 'row' || ''}}">
 
@@ -19,11 +22,11 @@
                   <!-- switch on input types -->
                   <div ng-switch-when="bool">
                     <label class="radio-inline">
-                      <input type="radio" required
+                      <input type="radio" ng-model="entry[field.name]" ng-value="true"
                         ng-attr-name="{{matrix.name}}-{{field.name}}"
                         value="yes"/>Yes</label>
                     <label class="radio-inline">
-                      <input type="radio" required
+                      <input type="radio" ng-model="entry[field.name]" ng-value="false"
                         ng-attr-name="{{matrix.name}}-{{field.name}}"
                         value="no"/>No</label>
                   </div>
@@ -46,38 +49,39 @@
                       required
                       ng-disabled="{{field.name == 'id'}}"
                       ng-attr-name="{{matrix.name}}-{{field.name}}"
-                      ng-model="entry[field.name]">
+                      ng-model="entry[field.name]" />
                   <div ng-switch-default>
-                    <select ng-if="field.foreign" class="form-control" ng-attr-name="{{matrix.name}}-{{field.name}}">
-                      <option>Sell</option>
-                      <option>Reload</option>
-                      <option>Admin</option>
+                    <select ng-if="field.foreign && field.name != 'UserId'" class="form-control" ng-attr-name="{{matrix.name}}-{{field.name}}">
+                      <option ng-repeat="line in foreigns[field.name]" ng-value="line.id" ng-selected="line.id == entry[field.name].id">{{line.name}}</option>
                     </select>
                     <input ng-if="!field.foreign" type="text" class="form-control"
                         required
                         ng-disabled="{{field.name == 'id'}}"
                         ng-attr-name="{{matrix.name}}-{{field.name}}"
-                        ng-model="entry[field.name]">
+                        ng-model="entry[field.name]" />
                   </div>
                 </div>
           </div>
         </div>
         
         <!-- multi-valued -->
-        <div ng-repeat="field in matrix.dataStructure" ng-if="field.multi_valued">
+        <div ng-repeat="table in matrix.dataStructure" ng-if="table.multi_valued">
           <br />
-          <legend>{{field.display_name ? field.display_name : (field.name | capitalize)}}</legend>
+          <legend>{{table.display_name ? table.display_name : (table.name | capitalize)}}</legend>
           <div class="table-responsive">
-            <table class="table table-striped" ng-if="!angular.isArray(field.subFields)">
+            <table class="table table-striped" ng-if="!angular.isArray(table.subFields)">
               <thead>
                 <tr>
-                  <th>{{field.display_name ? field.display_name : (field.name | capitalize)}}</th>
+                  <th ng-repeat="field in table.subFields">{{field.display_name ? field.display_name : (field.name | capitalize)}}</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="line in entry[field.name]">
-                  <td>{{line}}</td>
+                <tr ng-repeat="line in entry[table.name]">
+                  <td ng-repeat="field in table.subFields">
+                    {{line[field.name]|tableFilter:field.filter}}
+                  </td>
+                  
                   <td>
                     <button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></button>
                     <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
@@ -86,22 +90,7 @@
               </tbody>
             </table>
             <table class="table table-striped" ng-if="angular.isArray(field.subFields)">
-              <thead>
-                <tr>
-                  <th ng-if="angular.isArray(field.subFields)" 
-                      ng-repeat="subField in field.subFields">{{subField.display_name ? subField.display_name : (subField.name | capitalize)}}</th>
-                  
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="line in entry[field.name]">
-                  <td ng-repeat="subField in field.subFields">{{line[subField.name]|tableFilter:subField.filter}}</td>
-                  <td>
-                    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                  </td>
-                </tr>
-              </tbody>
+
             </table>
           </div>
         </div>

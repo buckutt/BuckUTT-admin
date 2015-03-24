@@ -37,7 +37,7 @@
       "name" : "PeriodId",
       "display_name" : "Period",
       "foreign" : "/periods",
-      "foreign_create" : "/periods?isRemoved=False&endDate=>=NOW()",
+      "create_options" : "isRemoved=False&order=id&asc=desc&endDate=>=NOW()",
       "filter" : "foreign>>name"
     }
   ]

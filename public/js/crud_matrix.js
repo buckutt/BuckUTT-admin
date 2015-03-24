@@ -236,6 +236,22 @@ var create_pagination = function($rootScope, $scope, $http, $location, base_req,
   });
 };
 
+var parse_options = function($filter, create_options) {
+  if (create_options.indexOf() != -1)
+    create_options = create_options.replace("NOW()", $filter('date')((new Date()), 'yyyy-MM-dd'));
+  
+  return create_options;
+};
+
+var make_drop_down = function($scope, $http, dataStructure) {
+  $http.get('/api'+parse_options(dataStructure.create_options)+'?limit=50').success(function(res) {
+    if (res.data.id)
+      res.data = [res.data];
+      
+    $scope.foreigns[dataStructure.name] = res.data;
+  });
+};
+
 /*
  * Create in scope all data used for bootstrap-ui date fields
  */

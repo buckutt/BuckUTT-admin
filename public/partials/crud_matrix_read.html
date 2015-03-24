@@ -76,7 +76,21 @@
           <!-- no multi-valued lines (previous tr loop will loop 0 times), for each item just print 1 line -->
           <!-- OR just this one is not multi-valued and has 0 subfields so previous tr loop will also loop 0 times -->
           <tr ng-if="mv_selected == 0 || entry[matrix.dataStructure[mv_selected].name].length == 0">
-            <td ng-repeat="field in matrix.dataStructure[mv_selected].subStructure">
+            <!-- no multi-valued lines -->
+            <td ng-if="mv_selected == 0 && entry[matrix.dataStructure[mv_selected].name].length != 0" ng-repeat="field in matrix.dataStructure">
+              <!-- mono-valued or multi-valued selected -->
+              <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
+                {{entry[field.name]|tableFilter:field.filter}}
+              </span>
+              
+              <!-- multi-valued not selected -->
+              <h4 ng-if="field.multi_valued && $index != mv_selected" class="no-margin">
+                <span ng-repeat="subfield in entry[field.name]" class="badge badge-default table-label">{{subfield | mvLabel:matrix.dataStructure[mv_selected].subStructure[$parent.$index].subFields}}</span>
+              </h4>
+            </td>
+            
+            <!-- not multi-valued and has 0 subfields -->
+            <td ng-if="entry[matrix.dataStructure[mv_selected].name].length == 0" ng-repeat="field in matrix.dataStructure[mv_selected].subStructure">
               <!-- mono-valued or multi-valued selected -->
               <span ng-if="!field.multi_valued || $index == mv_selected" class="no-margin">
                 {{entry.hasOwnProperty(field.name) && !field.hasOwnProperty('parent') ? (entry[field.name]|tableFilter:field.filter) : '-'}}

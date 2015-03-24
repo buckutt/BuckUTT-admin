@@ -2,7 +2,7 @@
   "public_server" : null,
   "root_server" : {
     
-    "api_access_profiles": ["root"],
+    "api_access_profiles": ["droit_admin"],
     "serving_static": true,
     
     "port": 80

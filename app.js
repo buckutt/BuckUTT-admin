@@ -31,13 +31,7 @@ var create_server = function(serv_name) {
   var app = express();
 
   app.use(logger('dev'));
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
-   
-  if (serv.serving_static)
-    app.use(express.static(path.join(__dirname, config.get('static_dir_path'))));
-  
   app.use(session({
     secret: config.get('cookie_secret'), 
     resave: false, 
@@ -52,8 +46,18 @@ var create_server = function(serv_name) {
     next();
   });
   
+  //backend proxy
   login_routes.backend = backend;
   app.use(backend.http_prefix+'*', api_routes);
+  
+  //must be after proxy
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
+  
+  if (serv.serving_static)
+    app.use(express.static(path.join(__dirname, config.get('static_dir_path'))));
+  
+  //routes served by our server app
   app.use('/', login_routes);
   
   http.createServer(app).listen(serv.port);
