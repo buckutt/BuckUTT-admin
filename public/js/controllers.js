@@ -68,7 +68,7 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
     $scope.parseInt = parseInt;  //to be moved away somewhere else
     $scope.angular = angular;  //to be moved away somewhere else
 
-    create_crud_matrix($rootScope.pageName, $scope, $http, function() {
+    create_crud_matrix($rootScope.pageName, $scope, $http, null, function() {
       var base_req = '/api'+$scope.matrix.get_url;
       if($routeParams.funId){
         var fun_location = $scope.matrix.fun_location ? $scope.matrix.fun_location+'.' : '';
@@ -91,16 +91,17 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
   }]
 );
 
-buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$scope', '$routeParams', '$http',
-  function($rootScope,$scope,$routeParams,$http) {
+buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$scope', '$routeParams', '$http', '$filter',
+  function($rootScope,$scope,$routeParams,$http,$filter) {
     $rootScope.pageName = $routeParams.pageName;
     $rootScope.funId = $routeParams.funId;
     $rootScope.entryId = $routeParams.entry;
+    var subField = $routeParams.subField;
     
     //handling date fields
     create_date_options($scope);
     
-    create_crud_matrix($rootScope.pageName, $scope, $http, function() {
+    create_crud_matrix($rootScope.pageName, $scope, $http, subField, function() {
       var base_req = '/api'+$scope.matrix.get_url+'&id='+$rootScope.entryId;
       
       if ($rootScope.entryId) { //update, load item
@@ -108,19 +109,63 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
           process_crud_matrix_data(res, $scope, $http, function() {
             //add a time field to separate date and time
             for(var i in $scope.matrix.dataStructure)
-              if($scope.matrix.dataStructure[i].form_type == 'datetime')
+              if($scope.matrix.dataStructure[i].form_type == 'datetime' && res.data)
                 res.data[0][$scope.matrix.dataStructure[i].name+'_time'] = new Date(res.data[0][$scope.matrix.dataStructure[i].name]);
             
-            $scope.entry = res.data ? res.data[0] : 'empty';
+            $rootScope.entry = res.data ? res.data[0] : 'empty';
+            $rootScope.saved_entry = angular.copy($rootScope.entry);
             
             $scope.foreigns = {};
             for(var i=0 in $scope.matrix.dataStructure)
               if($scope.matrix.dataStructure[i].foreign)
-                make_drop_down($scope, $http, $scope.matrix.dataStructure[i]);
+                make_drop_down($scope, $http, $filter, $scope.matrix.dataStructure[i]);
           });
         });
       }
     });//end http get crud structure
+    
+    $scope.submit = function() {//*
+      var changes = {};
+      changes[$scope.matrix.name] = {}; //for root object
+      
+      for (var i in $scope.matrix.dataStructure) {
+        var field = $scope.matrix.dataStructure[i];
+        if (field.multi_valued) {
+          changes[i.toString()] = {};
+          changes[i.toString()][field.name] = {};
+          for (var j in $rootScope.entry[field.name]) {
+            changes[i.toString()][field.name][j] = {};
+            for (var sf in field.subFields) {
+              if (JSON.stringify($rootScope.entry[field.name][j][sf]) != JSON.stringify($rootScope.saved_entry[field.name][j][sf]))
+                changes[i.toString()][field.name][j][sf] = $rootScope.entry[field.name][j][sf];
+            }
+          }
+        }
+        else { //mono valued
+          var comp = typeof $rootScope.entry[field.name] == 'object' ? $rootScope.entry[field.name].id : $rootScope.entry[field.name];
+          if (JSON.stringify(comp) != JSON.stringify($rootScope.saved_entry[field.name]))
+            changes[$scope.matrix.name][field.name] = $rootScope.entry[field.name];
+        }
+      }
+      console.log('/api'+$scope.matrix.put_url+'/'+$rootScope.entryId);
+      console.log(changes[$scope.matrix.name]);//*/
+      
+      /*
+      $http.put('http://127.0.0.1/api/fundations/1',{"website":"test"}).success(function(data) {
+        if (data.error) {
+          console.log(data);
+          alert(data.error.message);
+        }
+        else {
+          console.log(data);
+          
+          
+          delete $rootScope.entry;
+          delete $rootScope.saved_entry;
+          $location.path('/go_back');
+        }
+      });*/
+    };
   }]
 );
 
@@ -208,7 +253,7 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$locatio
             });
           }
           else { //Show all purchases mode
-            create_crud_matrix($rootScope.pageName, $scope, $http, function() {
+            create_crud_matrix($rootScope.pageName, $scope, $http, null, function() {
               var req = '/api'+$scope.matrix.get_url+'&between=date,'+str_start+','+str_end+'&FundationId='+$rootScope.funId;
               
               if (!$scope.split_promo)

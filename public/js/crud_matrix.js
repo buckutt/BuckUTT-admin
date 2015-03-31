@@ -5,13 +5,18 @@
 /*
  * Create a crud_matrix table structure with no data (the "matrix" variable in HTML view)
  */
-var create_crud_matrix = function(pageName, $scope, $http, callback) {
+var create_crud_matrix = function(pageName, $scope, $http, subField, callback) {
   $http.get('crud_matrix/'+pageName+'.json').success(function(data) {
     //set dataLength for counting sub fields on multi-valued fields
     //also create a sub-dataStructure in mv_cols with the sub-fields instead of parent field (eg : for article, price/period/group instead of prices)
     var mv_cols = [], mv_count = 0;//mv = multi-valued
     for (var i in data.dataStructure) {
       var col = data.dataStructure[i];
+      
+      // if creating matrix just for one subField and it is not this one
+      if (subField && subField != col.name)
+        delete data.dataStructure[i];
+      
       if (col.multi_valued) {
         col['dataLength'] = angular.isArray(col.subFields) ? col.subFields.length : 0;
         mv_cols.push({"pos" : i, "name" : col.name});
@@ -33,6 +38,10 @@ var create_crud_matrix = function(pageName, $scope, $http, callback) {
         }
       }//end if col.multi_valued
     }
+    
+    if (subField && data.dataStructure.length == 1)
+      for (var i in data.dataStructure)
+        data.dataStructure = data.dataStructure[i];
     
     $scope.matrix = data;
     $scope.mv_count = mv_count;
@@ -237,14 +246,18 @@ var create_pagination = function($rootScope, $scope, $http, $location, base_req,
 };
 
 var parse_options = function($filter, create_options) {
-  if (create_options.indexOf() != -1)
-    create_options = create_options.replace("NOW()", $filter('date')((new Date()), 'yyyy-MM-dd'));
+  if (create_options.indexOf('NOW()') != -1)
+    create_options = create_options.replace("NOW()", $filter('date')((new Date()), 'yyyy-MM-dd HH:mm:ss'));
   
   return create_options;
 };
 
-var make_drop_down = function($scope, $http, dataStructure) {
-  $http.get('/api'+parse_options(dataStructure.create_options)+'?limit=50').success(function(res) {
+var make_drop_down = function($scope, $http, $filter, dataStructure) {
+  var req = dataStructure.foreign+'?limit=200';
+  if (dataStructure.create_options)
+    req += ('&'+parse_options($filter,dataStructure.create_options));
+  
+  $http.get('/api'+req).success(function(res) {
     if (res.data.id)
       res.data = [res.data];
       

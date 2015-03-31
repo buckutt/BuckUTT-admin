@@ -4,6 +4,7 @@
   [
   ],
   "get_url" : "/periods?isRemoved=False",
+  "put_url" : "/periods",
   "dataStructure" : 
   [
     {

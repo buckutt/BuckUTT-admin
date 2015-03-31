@@ -4,6 +4,7 @@
   [
   ],
   "get_url" : "/articles?embed=prices,SellingPlaces&type=product&isRemoved=False",
+  "put_url" : "/articles",
   "fun_location" : "Price",
   "dataStructure" : 
   [
@@ -16,6 +17,9 @@
     {
       "name" : "Prices",
       "multi_valued" : true,
+      "get_url" : "/prices?isRemoved=False",
+      "put_url" : "/prices",
+      "foreign_key" : "ArticleId",
       "subFields" :
       [
         {
@@ -43,6 +47,9 @@
       "name" : "SellingPlaces",
       "display_name" : "Points",
       "multi_valued" : true,
+      "get_url" : "/articlespoints?isRemoved=False",
+      "put_url" : "/articlespoints",
+      "foreign_key" : "ArticleId",
       "subFields" :
       [
         {

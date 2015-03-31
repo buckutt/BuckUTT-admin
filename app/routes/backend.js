@@ -5,7 +5,7 @@ var httpProxy = require('http-proxy');
 var config = require('../configManager');
 var proxy = httpProxy.createProxyServer();
 
-router.get('/', function(req, res) {
+router.all('/', function(req, res) {
   console.log('API '+req.originalUrl)
   var sess=req.session;
   var r = {};
@@ -23,9 +23,18 @@ router.get('/', function(req, res) {
   req.headers['Accept'] = '*/*';
   req.headers['Authorization'] = 'Bearer ' + sess.user.token;
   
-  proxy.web(req, res, {
-    target: req.buckutt_server.backend.base_url+req.originalUrl
-  });
+  var base_url = req.buckutt_server.backend.base_url;
+  delete req.buckutt_server;
+  req.url = req.originalUrl;
+  
+  try {
+    proxy.web(req, res, {
+      target: base_url
+    });
+  } catch(err) {
+    console.log('----- PROXY ERROR -----');
+    console.log(err);
+  }
 });
 
 module.exports = router;

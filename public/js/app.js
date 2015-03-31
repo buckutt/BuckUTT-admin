@@ -18,7 +18,7 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/general/:pageName/update/:entry', {
+      .when('/general/:pageName/update/:entry/:subField?/:sfId?', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
@@ -34,7 +34,7 @@ buckuttAdminApp.config(['$routeProvider',
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
-      .when('/fundation/:funId/:pageName/update/:entry', {
+      .when('/fundation/:funId/:pageName/update/:entry/:subField?/:sfId?', {
         templateUrl: 'partials/crud_matrix_create_update.html',
         controller: 'CrudMatrixCreateUpdateCtrl'
       })
