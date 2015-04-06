@@ -175,10 +175,6 @@ buckuttAdminApp.filter('mvLabel', ['tableFilterFilter', function(tableFilterFilt
           if(dataStructure[i].filter)
             f = dataStructure[i].filter;
           
-          // dataStructure[i].name can be "name" or "Something.name"
-          /*values = dataStructure[i].name.split('.');
-          value = values.length == 1 ? input[dataStructure[i].name] : input[values[0]][values[1]];
-          str += tableFilterFilter(value, f) + ' | ';*/
           str += tableFilterFilter(input[dataStructure[i].name], f) + ' | ';
         }
       }

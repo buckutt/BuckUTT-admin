@@ -174,6 +174,24 @@ var process_crud_matrix_data = function(res, $scope, $http, callback) {
     if (col.multi_valued) {
       //go through subfields
       for (var sf in col.subFields) {
+        if (col.subFields[sf].move_embed) {
+          //create object in data
+          //res.data[col.name]
+          
+          //move the fields
+          for (var e in res.data) {
+            for (var se in res.data[e][col.name]) {
+              res.data[e][col.name][se][col.subFields[sf].name] = {};
+              var moveFields = col.subFields[sf].move_embed.split(',');
+              for (var ssf in moveFields) {
+                if (res.data[e][col.name][se][moveFields[ssf]]) {
+                  res.data[e][col.name][se][col.subFields[sf].name][moveFields[ssf]] = res.data[e][col.name][se][moveFields[ssf]];
+                  delete res.data[e][col.name][se][moveFields[ssf]];
+                }
+              }
+            }
+          }
+        }
         if (col.subFields[sf].name.indexOf('.') != -1)
           sub_field_replace(sf, col, res.data);
         
@@ -255,7 +273,7 @@ var parse_options = function($filter, create_options) {
 };
 
 var make_drop_down = function($scope, $http, $filter, dataStructure, data) {
-  var foreign_model = dataStructure.foreign ? dataStructure.foreign : dataStructure.form_foreign;
+  var foreign_model = dataStructure.foreign ? dataStructure.foreign : dataStructure.drop_down;
   var req = foreign_model+'?isRemoved=False&limit=200';
   if (dataStructure.create_options)
     req += ('&'+parse_options($filter,dataStructure.create_options));

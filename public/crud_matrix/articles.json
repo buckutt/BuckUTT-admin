@@ -57,9 +57,11 @@
       "subFields" :
       [
         {
-          "name" : "name",
-          "display_name" : "Point",
-          "form_foreign" : "/points"
+          "name" : "Point",
+          "move_embed" : "id,name",
+          "filter" : "foreign>>name",
+          "drop_down" : "/points",
+          "mv_display" : true
         },
         {
           "name" : "ArticlesPoints.priority",

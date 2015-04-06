@@ -181,10 +181,8 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
       $scope.foreigns = {};// code to merge
       for(var i=0 in $scope.matrix.dataStructure[fieldId].subFields) {
         var sf = $scope.matrix.dataStructure[fieldId].subFields[i];
-        if(sf.foreign)
+        if(sf.foreign || sf.move_embed)
           make_drop_down($scope, $http, $filter, sf, $scope.entry[fieldName][relativeId][sf.name].id);
-        else if(sf.form_foreign)
-          make_drop_down($scope, $http, $filter, sf, $scope.entry[fieldName][relativeId].id);
       }
     };
     
@@ -198,7 +196,7 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
       $scope.foreigns = {};// code to merge
       for(var i=0 in $scope.matrix.dataStructure[fieldId].subFields) {
         var sf = $scope.matrix.dataStructure[fieldId].subFields[i];
-        if(sf.foreign || sf.form_foreign)
+        if(sf.foreign || sf.move_embed)
           make_drop_down($scope, $http, $filter, sf, -1);
       }
     };

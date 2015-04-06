@@ -35,8 +35,10 @@
       "subFields" :
       [
         {
-          "name" : "name",
-          "display_name" : "Group Name"
+          "name" : "Group",
+          "move_embed" : "id,name",
+          "filter" : "foreign>>name",
+          "drop_down" : "/groups"
         }
       ]
     }

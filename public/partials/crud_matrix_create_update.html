@@ -28,7 +28,7 @@
         </legend>
         <form ng-if="selectedSf[table.name]" class="well form-horizontal">
           <button type="button" class="btn btn-primary pull-right" ng-click="sfSubmit($parent.$index,table.name)">Done</button>
-          <div ng-include="'partials/crud_matrix_create_update_fields.html'" onload="dataStructure = table.subFields;data = selectedSf[table.name].entry;"></div>
+          <div ng-include="'partials/crud_matrix_create_update_fields.html'" onload="dataStructure = table.subFields;data = selectedSf[table.name].entry;" style="min-height:80px;"></div>
           <button type="button" class="btn btn-warning pull-right" style="position:relative;bottom:30px" ng-click="sfCancel($parent.$index,table.name)">Cancel</button>
         </form>
         <div class="table-responsive" class="well">
@@ -46,7 +46,7 @@
                 </td>
                 
                 <td>
-                  <button type="button" class="btn btn-primary btn-xs btn-create" ng-click="sfLoadEntry($parent.$index,table.name,$index)"><span class="glyphicon glyphicon-pencil"></span></button>
+                  <button type="button" class="btn btn-primary btn-xs btn-create" ng-if="table.subFields.length > 1" ng-click="sfLoadEntry($parent.$index,table.name,$index)"><span class="glyphicon glyphicon-pencil"></span></button>
                   <button type="button" class="btn btn-danger btn-xs" ng-click="sfDelEntry($parent.$index,table.name,$index)"><span class="glyphicon glyphicon-remove"></span></button>
                 </td>
               </tr>
