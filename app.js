@@ -18,9 +18,6 @@ var api_routes = require('./app/routes/backend');
 var login_routes = require('./app/routes/login');
 
 var backend = config.get('backend');
-backend.base_url  = 'http'+(backend.https ? 's' : '')+'://';
-backend.base_url += backend.host+':';
-backend.base_url += backend.port;
 
 var create_server = function(serv_name) {
   var serv = config.get(serv_name);

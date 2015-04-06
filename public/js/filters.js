@@ -47,6 +47,25 @@ buckuttAdminApp.filter('currency2', ['numericFilter', function(numericFilter) {
 }]);
 
 /*
+ * orderBy can only be used on array defined with []
+ * but in this program we often use "object assoc arrays" like this:
+ * a = {}; a[str(pos)] = value;
+ */
+buckuttAdminApp.filter('orderObjectBy', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
+  };
+});
+
+/*
  * takes an object and a fieldname string in entry
  * returns the value of this field in the object
  * "foreign:firstname" with the entry {'firstname':'John', 'lastname':'Doe'}

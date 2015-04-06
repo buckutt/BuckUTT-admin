@@ -2,98 +2,58 @@
     
     <!-- Page name -->
     <span ng-switch="$root.funId">
-      <h2 ng-switch-when="undefined" class="sub-header">{{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
-      <h2 ng-switch-default class="sub-header">{{$root.funList[funId].name}} - {{matrix.name | capitalize}} - {{$root.entryId ? 'Update' : 'Create'}}</h2>
+      <h2 ng-switch-when="undefined" class="sub-header">{{matrix.name | capitalize}} - {{entryId ? 'Update' : 'Create'}}</h2>
+      <h2 ng-switch-default class="sub-header">{{$root.funList[funId].name}} - {{matrix.name | capitalize}} - {{entryId ? 'Update' : 'Create'}}</h2>
     </span>
     
     <p>
-      <a href="{{$root.getUrl()}}"  class="btn btn-warning">Cancel & go back</a>
+      <a href="/#{{$root.getUrl()}}"  class="btn btn-warning">Cancel & go back</a>
       <button type="button" class="btn btn-primary pull-right" ng-click="submit()">Submit</button>
     </p>
     
     <div class="data-main-content">
-      <form class="well form-horizontal">
-        <!-- mono-valued -->
-        <div ng-repeat="field in matrix.dataStructure" ng-if="!field.multi_valued" ng-attr-class="{{!field.multi_valued && 'row' || ''}}">
-
-          <div ng-if="field.name != 'id' || entryId" class="form-group col-lg-6" >
-                <label ng-attr-for="{{matrix.name}}-{{field.name}}" class="col-lg-2" style="margin-top:7px;">{{field.display_name ? field.display_name : (field.name | capitalize)}}</label>
-                <div ng-switch="field.form_type" class="col-lg-10">
-                  <!-- switch on input types -->
-                  <div ng-switch-when="bool">
-                    <label class="radio-inline">
-                      <input type="radio" ng-model="$root.entry[field.name]" ng-value="true"
-                        ng-attr-name="{{matrix.name}}-{{field.name}}"
-                        value="yes"/>Yes</label>
-                    <label class="radio-inline">
-                      <input type="radio" ng-model="$root.entry[field.name]" ng-value="false"
-                        ng-attr-name="{{matrix.name}}-{{field.name}}"
-                        value="no"/>No</label>
-                  </div>
-                  <div ng-switch-when="datetime" class="row" style="padding-left:15px;">
-                    <div class="input-group col-md-8" style="float:left;">
-                      <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions" required
-                      datepicker-popup="yyyy-MM-dd" ng-model="$root.entry[field.name]" is-open="opened[field.name]" ng-required="true" close-text="Close" />
-                      
-                      <span class="input-group-btn">
-                        <button type="button" class="btn btn-default" ng-click="open($event,field.name)"><i class="glyphicon glyphicon-calendar"></i></button>
-                      </span>
-                      
-                    </div>
-                    <div class="col-md-4">
-                      <input type="time" class="form-control" ng-model="$root.entry[field.name+'_time']" required>
-                    </div>
-                  </div>
-                  <input type="number" class="form-control"
-                      ng-switch-when="number"
-                      required
-                      ng-disabled="{{field.name == 'id'}}"
-                      ng-attr-name="{{matrix.name}}-{{field.name}}"
-                      ng-model="$root.entry[field.name]" />
-                  <div ng-switch-default>
-                    <select ng-if="field.foreign && field.name != 'UserId'" class="form-control" ng-attr-name="{{matrix.name}}-{{field.name}}">
-                      <option ng-repeat="line in foreigns[field.name]" ng-value="line.id" ng-selected="line.id == $root.entry[field.name].id">{{line.name}}</option>
-                    </select>
-                    <input ng-if="!field.foreign" type="text" class="form-control"
-                        required
-                        ng-disabled="{{field.name == 'id'}}"
-                        ng-attr-name="{{matrix.name}}-{{field.name}}"
-                        ng-model="$root.entry[field.name]" />
-                  </div>
-                </div>
-          </div>
-        </div>
-        
-        <!-- multi-valued -->
-        <div ng-repeat="table in matrix.dataStructure" ng-if="table.multi_valued">
-          <br />
-          <legend>{{table.display_name ? table.display_name : (foreign_key.name | capitalize)}}</legend>
-          <div class="table-responsive">
-            <table class="table table-striped" ng-if="!angular.isArray(table.subFields)">
-              <thead>
-                <tr>
-                  <th ng-repeat="field in table.subFields">{{field.display_name ? field.display_name : (field.name | capitalize)}}</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="line in $root.entry[table.name]">
-                  <td ng-repeat="field in table.subFields">
-                    {{line[field.name]|tableFilter:field.filter}}
-                  </td>
-                  
-                  <td>
-                    <a ng-href="{{$root.getUrl()}}/update/{{entry['id']}}/{{table.name}}/{{table.foreign_key ? line['id'] : ''}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
-                    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table class="table table-striped" ng-if="angular.isArray(field.subFields)">
-
-            </table>
-          </div>
-        </div>
+      <!-- mono-valued -->
+      <form ng-if="matrix && entry" class="well form-horizontal">
+        <!-- with ng-if="matrix" we are waiting that matrix is loaded to call include -->
+        <!-- binding in onload will fail if we don't do that -->
+        <div ng-include="'partials/crud_matrix_create_update_fields.html'" onload="dataStructure = matrix.dataStructure;data = entry"></div>
       </form>
+      
+      <!-- multi-valued -->
+      <div ng-repeat="table in matrix.dataStructure" ng-if="table.multi_valued && entry">
+        <br />
+        <legend>
+          {{table.display_name ? table.display_name : (table.name | capitalize)}}
+          <button type="button" class="btn btn-primary btn-xs btn-create pull-right" ng-click="sfAddEntry($parent.$index,table.name)"><span class="glyphicon glyphicon-plus"></span></button>
+        </legend>
+        <form ng-if="selectedSf[table.name]" class="well form-horizontal">
+          <button type="button" class="btn btn-primary pull-right" ng-click="sfSubmit($parent.$index,table.name)">Done</button>
+          <div ng-include="'partials/crud_matrix_create_update_fields.html'" onload="dataStructure = table.subFields;data = selectedSf[table.name].entry;"></div>
+          <button type="button" class="btn btn-warning pull-right" style="position:relative;bottom:30px" ng-click="sfCancel($parent.$index,table.name)">Cancel</button>
+        </form>
+        <div class="table-responsive" class="well">
+          <table class="table table-striped" ng-if="!angular.isArray(table.subFields)">
+            <thead>
+              <tr>
+                <th ng-repeat="field in table.subFields">{{field.display_name ? field.display_name : (field.name | capitalize)}}</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="line in entry[table.name]">
+                <td ng-repeat="field in table.subFields">
+                  {{line[field.name]|tableFilter:field.filter}}
+                </td>
+                
+                <td>
+                  <button type="button" class="btn btn-primary btn-xs btn-create" ng-click="sfLoadEntry($parent.$index,table.name,$index)"><span class="glyphicon glyphicon-pencil"></span></button>
+                  <button type="button" class="btn btn-danger btn-xs" ng-click="sfDelEntry($parent.$index,table.name,$index)"><span class="glyphicon glyphicon-remove"></span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
     </div>
   </div>

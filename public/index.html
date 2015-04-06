@@ -46,7 +46,7 @@
           <li class="{{ (fun.id == funId && $root.pageName == 'periods') ? 'active' : ''}}"><a ng-href="/#/general/periods">Periods (Global)</a></li>
           <li class="{{ (fun.id == funId && $root.pageName == 'treasury') ? 'active' : ''}}"><a ng-href="/#/general/treasury">Treasury (Global)</a></li>
         </ul>
-        <div ng-repeat="fun in $root.funList | orderBy:'name'">
+        <div ng-repeat="fun in $root.funList | orderObjectBy:'name'">
           <label class="tree-toggler nav-header">{{fun.name}} Administration</label>
           <ul class="nav nav-sidebar">
             <li class="{{ (fun.id == funId && $root.pageName == 'articles') ? 'active' : ''}}"><a ng-href="/#/fundation/{{fun.id}}/articles">Articles</a></li>

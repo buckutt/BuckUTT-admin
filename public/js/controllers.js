@@ -16,7 +16,7 @@ buckuttControllers.controller('AppCtrl', ['$rootScope', '$scope', '$location', '
     });
     
     $rootScope.getUrl = function() {
-      return $rootScope.funId ? '/#/fundation/'+$rootScope.funId+'/'+$rootScope.pageName : '/#/general/'+$rootScope.pageName;
+      return $rootScope.funId ? '/fundation/'+$rootScope.funId+'/'+$rootScope.pageName : '/general/'+$rootScope.pageName;
     };
   }]
 );
@@ -68,7 +68,7 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
     $scope.parseInt = parseInt;  //to be moved away somewhere else
     $scope.angular = angular;  //to be moved away somewhere else
 
-    create_crud_matrix($rootScope.pageName, $scope, $http, null, function() {
+    create_crud_matrix($rootScope.pageName, $scope, $http, function() {
       var base_req = '/api'+$scope.matrix.get_url;
       if($routeParams.funId){
         var fun_location = $scope.matrix.fun_location ? $scope.matrix.fun_location+'.' : '';
@@ -91,19 +91,20 @@ buckuttControllers.controller('CrudMatrixReadCtrl', ['$rootScope', '$scope', '$l
   }]
 );
 
-buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$scope', '$routeParams', '$http', '$filter',
-  function($rootScope,$scope,$routeParams,$http,$filter) {
+buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$scope', '$routeParams', '$http', '$filter', '$location',
+  function($rootScope,$scope,$routeParams,$http,$filter,$location) {
     $rootScope.pageName = $routeParams.pageName;
     $rootScope.funId = $routeParams.funId;
     $rootScope.entryId = $routeParams.entry;
-    var subField = $routeParams.subField;
     
     //handling date fields
     create_date_options($scope);
     
-    create_crud_matrix($rootScope.pageName, $scope, $http, subField, function() {
+    create_crud_matrix($rootScope.pageName, $scope, $http, function() {
       var base_req = '/api'+$scope.matrix.get_url+'&id='+$rootScope.entryId;
       
+      $scope.selectedSf = {};
+        
       if ($rootScope.entryId) { //update, load item
         $http.get(base_req).success(function(res) {
           process_crud_matrix_data(res, $scope, $http, function() {
@@ -112,22 +113,26 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
               if($scope.matrix.dataStructure[i].form_type == 'datetime' && res.data)
                 res.data[0][$scope.matrix.dataStructure[i].name+'_time'] = new Date(res.data[0][$scope.matrix.dataStructure[i].name]);
             
-            $rootScope.entry = res.data ? res.data[0] : 'empty';
-            $rootScope.saved_entry = angular.copy($rootScope.entry);
+            if (!res.data[0])
+              return;
+            
+            $scope.saved_entry = angular.copy(res.data[0]);
+            $scope.entry = res.data[0];
             
             $scope.foreigns = {};
             for(var i=0 in $scope.matrix.dataStructure)
-              if($scope.matrix.dataStructure[i].foreign)
-                make_drop_down($scope, $http, $filter, $scope.matrix.dataStructure[i]);
+              if($scope.matrix.dataStructure[i].foreign && !$scope.matrix.dataStructure[i].multi_valued)
+                make_drop_down($scope, $http, $filter, $scope.matrix.dataStructure[i], res.data[0][$scope.matrix.dataStructure[i].name]);
           });
         });
       }
     });//end http get crud structure
     
-    $scope.submit = function() {//*
+    $scope.submit = function() {
       var changes = {};
       changes[$scope.matrix.name] = {}; //for root object
-      
+      console.log($scope.entry);
+      /*
       for (var i in $scope.matrix.dataStructure) {
         var field = $scope.matrix.dataStructure[i];
         if (field.multi_valued) {
@@ -135,7 +140,7 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
           changes[i.toString()][field.name] = {};
           for (var j in $rootScope.entry[field.name]) {
             changes[i.toString()][field.name][j] = {};
-            for (var sf in field.subFields) {
+            for (var sf in field.$scope.subFields) {
               if (JSON.stringify($rootScope.entry[field.name][j][sf]) != JSON.stringify($rootScope.saved_entry[field.name][j][sf]))
                 changes[i.toString()][field.name][j][sf] = $rootScope.entry[field.name][j][sf];
             }
@@ -165,6 +170,58 @@ buckuttControllers.controller('CrudMatrixCreateUpdateCtrl', ['$rootScope', '$sco
           $location.path('/go_back');
         }
       });*/
+    };
+    
+    $scope.sfLoadEntry = function(fieldId,fieldName,relativeId) {
+      if ($scope.selectedSf[fieldName])
+        return;
+      
+      $scope.selectedSf[fieldName] = {relativeId:relativeId,entry:angular.copy($scope.entry[fieldName][relativeId])};
+      
+      $scope.foreigns = {};// code to merge
+      for(var i=0 in $scope.matrix.dataStructure[fieldId].subFields) {
+        var sf = $scope.matrix.dataStructure[fieldId].subFields[i];
+        if(sf.foreign)
+          make_drop_down($scope, $http, $filter, sf, $scope.entry[fieldName][relativeId][sf.name].id);
+        else if(sf.form_foreign)
+          make_drop_down($scope, $http, $filter, sf, $scope.entry[fieldName][relativeId].id);
+      }
+    };
+    
+    $scope.sfAddEntry = function(fieldId,fieldName) {
+      if ($scope.selectedSf[fieldName]) {
+        $scope.sfCancel(fieldId,fieldName);
+        return;
+      }
+      $scope.selectedSf[fieldName] = {entry:{}};
+      
+      $scope.foreigns = {};// code to merge
+      for(var i=0 in $scope.matrix.dataStructure[fieldId].subFields) {
+        var sf = $scope.matrix.dataStructure[fieldId].subFields[i];
+        if(sf.foreign || sf.form_foreign)
+          make_drop_down($scope, $http, $filter, sf, -1);
+      }
+    };
+    
+    $scope.sfDelEntry = function(fieldId,fieldName, entryId) {
+      if ($scope.entry[fieldName][entryId]) {
+        $scope.entry[fieldName].splice(entryId,1);
+      }
+    };
+    
+    $scope.sfSubmit = function(fieldId,fieldName) {
+      if ($scope.selectedSf[fieldName].relativeId >= 0) { //case of update
+        $scope.entry[fieldName][$scope.selectedSf[fieldName].relativeId] = $scope.selectedSf[fieldName].entry;
+        console.log($scope.selectedSf[fieldName].entry);
+      }
+      else { //case of create
+        $scope.entry[fieldName].push($scope.selectedSf[fieldName].entry);
+      }
+      delete $scope.selectedSf[fieldName];
+    };
+    
+    $scope.sfCancel = function(fieldId,fieldName) {
+      delete $scope.selectedSf[fieldName];
     };
   }]
 );
@@ -253,7 +310,7 @@ buckuttControllers.controller('TreasuryCtrl', ['$rootScope', '$scope', '$locatio
             });
           }
           else { //Show all purchases mode
-            create_crud_matrix($rootScope.pageName, $scope, $http, null, function() {
+            create_crud_matrix($rootScope.pageName, $scope, $http, function() {
               var req = '/api'+$scope.matrix.get_url+'&between=date,'+str_start+','+str_end+'&FundationId='+$rootScope.funId;
               
               if (!$scope.split_promo)

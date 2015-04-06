@@ -1,0 +1,54 @@
+  <div ng-repeat="field in dataStructure" ng-if="!field.multi_valued" class="row">
+    <div ng-if="field.name != 'id' || entryId" class="form-group col-lg-6" >
+      <label class="col-lg-3" style="margin-top:7px;">{{field.display_name ? field.display_name : (field.name | capitalize)}}</label>
+      <div ng-switch="field.form_type" class="col-lg-9">
+        <!-- switch on input types -->
+        <div ng-switch-when="bool">
+          <label class="radio-inline">
+            <input type="radio" ng-model="data[field.name]" ng-value="true"
+              value="yes"/>Yes</label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="data[field.name]" ng-value="false"
+              value="no"/>No</label>
+        </div>
+        <div ng-switch-when="datetime" class="row" style="padding-left:15px;">
+          <div class="input-group col-md-8" style="float:left;">
+            <input type="text" class="form-control" placeholder="yyyy-mm-dd" datepicker-options="dateOptions" required
+            datepicker-popup="yyyy-MM-dd" ng-model="data[field.name]" is-open="opened[field.name]" ng-required="true" close-text="Close" />
+            
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="open($event,field.name)"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+            
+          </div>
+          <div class="col-md-4">
+            <input type="time" class="form-control" ng-model="data[field.name+'_time']" required>
+          </div>
+        </div>
+        <input type="number" class="form-control"
+            ng-switch-when="number"
+            required
+            ng-disabled="{{field.name == 'id'}}"
+            ng-model="data[field.name]" />
+        <div ng-switch-default>
+          <!-- object loaded with foreign_field_replace function -->
+          <select ng-if="field.foreign && !field.form_foreign && field.name != 'UserId'" 
+                  ng-options="line.name for line in foreigns[field.name] | orderBy:'name' track by line.id" 
+                  ng-model="data[field.name]" class="form-control">
+              <option ng-if="!data[field.name].id" value="" disabled>-- Select --</option>
+          </select>
+          <!-- object loaded with api embed -->
+          <select ng-if="!field.foreign && field.form_foreign && field.name != 'UserId'" 
+                  ng-options="line.name for line in foreigns[field.name] | orderBy:'name' track by line.id" 
+                  ng-model="data" class="form-control">
+              <option ng-if="!data.id" value="" disabled>-- Select --</option>
+          </select>
+          <!-- default input -->
+          <input ng-if="!field.foreign && !field.form_foreign" type="text" class="form-control"
+              required
+              ng-disabled="{{field.name == 'id'}}"
+              ng-model="data[field.name]" />
+        </div>
+      </div>
+    </div>
+  </div>

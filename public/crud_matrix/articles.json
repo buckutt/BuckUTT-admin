@@ -19,12 +19,13 @@
       "multi_valued" : true,
       "get_url" : "/prices?isRemoved=False",
       "put_url" : "/prices",
-      "foreign_key" : "ArticleId",
+      "local_key" : "ArticleId",
       "subFields" :
       [
         {
           "name" : "credit",
           "mv_display" : true,
+          "form_type" : "number",
           "filter" : "currency>>\u20AC"
         },
         {
@@ -32,6 +33,7 @@
           "display_name" : "Period",
           "mv_display" : true,
           "foreign" : "/periods",
+          "create_options" : "endDate=>=NOW()",
           "filter" : "foreign>>name"
         },
         {
@@ -49,16 +51,20 @@
       "multi_valued" : true,
       "get_url" : "/articlespoints?isRemoved=False",
       "put_url" : "/articlespoints",
-      "foreign_key" : "ArticleId",
+      "local_key" : "ArticleId",
+      "foreign_key" : "PointId",
+      "id" : "ArticlesPoints.id",
       "subFields" :
       [
         {
           "name" : "name",
-          "display_name" : "Point Name"
+          "display_name" : "Point",
+          "form_foreign" : "/points"
         },
         {
           "name" : "ArticlesPoints.priority",
           "display_name" : "Priority",
+          "form_type" : "number",
           "mv_display" : true
         }
       ]

@@ -5,17 +5,13 @@
 /*
  * Create a crud_matrix table structure with no data (the "matrix" variable in HTML view)
  */
-var create_crud_matrix = function(pageName, $scope, $http, subField, callback) {
+var create_crud_matrix = function(pageName, $scope, $http, callback) {
   $http.get('crud_matrix/'+pageName+'.json').success(function(data) {
     //set dataLength for counting sub fields on multi-valued fields
     //also create a sub-dataStructure in mv_cols with the sub-fields instead of parent field (eg : for article, price/period/group instead of prices)
-    var mv_cols = [], mv_count = 0;//mv = multi-valued
-    for (var i in data.dataStructure) {
+    var i = 0, mv_cols = [], mv_count = 0;//mv = multi-valued
+    while( i < data.dataStructure.length) {
       var col = data.dataStructure[i];
-      
-      // if creating matrix just for one subField and it is not this one
-      if (subField && subField != col.name)
-        delete data.dataStructure[i];
       
       if (col.multi_valued) {
         col['dataLength'] = angular.isArray(col.subFields) ? col.subFields.length : 0;
@@ -36,12 +32,13 @@ var create_crud_matrix = function(pageName, $scope, $http, subField, callback) {
             col.subStructure.push(data.dataStructure[j]);
           }
         }
+        
+        if (col.id)
+          col.id = col.id.split('.');
+        
       }//end if col.multi_valued
+      i++;
     }
-    
-    if (subField && data.dataStructure.length == 1)
-      for (var i in data.dataStructure)
-        data.dataStructure = data.dataStructure[i];
     
     $scope.matrix = data;
     $scope.mv_count = mv_count;
@@ -116,6 +113,11 @@ var foreign_field_replace = function($http, colName, dataStructure, data) {
   });
 };
 
+/*
+ * for cols with "." in name like "ArticlesPoints.priority"
+ * copy data.x.y to data.y when name is x.y so that y can be accessed directly
+ * also changes name in dataStructure from x.y to y
+ */
 var sub_field_replace = function(colName, dataStructure, data) {
   if (colName == dataStructure.name) { //not in a sub-field
     var values = colName.split('.');
@@ -252,8 +254,9 @@ var parse_options = function($filter, create_options) {
   return create_options;
 };
 
-var make_drop_down = function($scope, $http, $filter, dataStructure) {
-  var req = dataStructure.foreign+'?limit=200';
+var make_drop_down = function($scope, $http, $filter, dataStructure, data) {
+  var foreign_model = dataStructure.foreign ? dataStructure.foreign : dataStructure.form_foreign;
+  var req = foreign_model+'?isRemoved=False&limit=200';
   if (dataStructure.create_options)
     req += ('&'+parse_options($filter,dataStructure.create_options));
   
@@ -262,6 +265,22 @@ var make_drop_down = function($scope, $http, $filter, dataStructure) {
       res.data = [res.data];
       
     $scope.foreigns[dataStructure.name] = res.data;
+    
+    if (!data || data == -1) //do not search for id -1
+      return;
+    
+    //check if selected data is in $scope.foreigns
+    var found = false;
+    for (var f in $scope.foreigns[dataStructure.name])
+      if ($scope.foreigns[dataStructure.name][f].id == data)
+        found = true;
+    
+    if (!found) {
+      $http.get('/api'+foreign_model+'?id='+data).success(function(res) {
+        if (res.data)
+          $scope.foreigns[dataStructure.name].push(res.data);
+      });
+    }
   });
 };
 

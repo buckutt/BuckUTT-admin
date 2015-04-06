@@ -23,11 +23,15 @@
     },
     {
       "name" : "credit",
+      "form_type" : "number",
       "filter" : "currency:\u20AC"
     },
     {
       "name" : "Groups",
       "multi_valued" : true,
+      "put_url" : "/usersgroups",
+      "local_key" : "ArticleId",
+      "foreign_key" : "GroupId",
       "subFields" :
       [
         {

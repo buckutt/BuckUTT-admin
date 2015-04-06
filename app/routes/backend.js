@@ -30,7 +30,9 @@ router.all('/', function(req, res) {
   try {
     proxy.web(req, res, {
       target: base_url
-    });
+    }, function(e) {
+			console.log("Connection to API failed");
+		});
   } catch(err) {
     console.log('----- PROXY ERROR -----');
     console.log(err);

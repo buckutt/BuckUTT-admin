@@ -17,7 +17,7 @@
       <div ng-include="'partials/pagination.html'" role="group" class="btn-group" style="float:right"></div>
       
       <button type="button" class="btn btn-warning">Search & Sort</button>
-      <span><a href="{{$root.getUrl()}}/create" class="btn btn-primary btn-create">Create</a></span>
+      <span><a href="/#{{$root.getUrl()}}/create" class="btn btn-primary btn-create">Create</a></span>
     </p>
     
     <div ng-if="error" class="alert alert-danger" role="alert">{{error.type}}<br />{{error.message}}</div>
@@ -68,7 +68,7 @@
             <td ng-if="!$first && !matrix.dataStructure[mv_selected].hasOwnProperty('subFields')">{{line|tableFilter:field.filter}}</td>
             
             <td ng-if="$first" ng-attr-rowspan="{{entry.mv_lengths[mv_selected]}}">
-              <a ng-href="{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a ng-href="/#{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>
@@ -103,7 +103,7 @@
             </td>
             
             <td>
-              <a ng-href="{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a ng-href="/#{{$root.getUrl()}}/update/{{entry['id']}}" class="btn btn-primary btn-xs btn-create"><span class="glyphicon glyphicon-pencil"></span></a>
               <button type="button" class="btn btn-danger btn-xs btn-create"><span class="glyphicon glyphicon-remove"></span></button>
             </td>
           </tr>
